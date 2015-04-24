@@ -25,6 +25,8 @@ object Interpolate extends dzufferey.arg.Options {
     val proof = ProofParser.parse(proofTrace)
     SysCmd(Array("rm", "output.proof"))
 
+    ProofStep.prettyPrint(proof)
+
     //label clause by side
     val ca = FormulaUtils.getConjuncts(a).map( _ -> Side.A )
     val cb = FormulaUtils.getConjuncts(b).map( _ -> Side.B )
@@ -50,12 +52,17 @@ object Interpolate extends dzufferey.arg.Options {
   val usage = "-a f_a -b f_b"
 
   def main(args: Array[String]) {
-    apply(args)
-    assert(a.isDefined, "a undefined")
-    assert(b.isDefined, "b undefined")
-    assert(lb < ub)
-    val i = interpolate(lb, ub, a.get, b.get)
-    println("interpolant: " + i)
+    try {
+      apply(args)
+      assert(a.isDefined, "a undefined")
+      assert(b.isDefined, "b undefined")
+      assert(lb < ub)
+      val i = interpolate(lb, ub, a.get, b.get)
+      println("interpolant: " + i)
+    } catch { case t: Throwable =>
+      Console.err.println("failed to compute an interpolant: " + t + "\n  " + t.getStackTrace.mkString("\n  "))
+      sys.exit(-1)
+    }
   }
 
   def parseFormula(s: String): Formula = {

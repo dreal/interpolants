@@ -30,3 +30,31 @@ case class Contraction(f: Formula, after: Map[Variable, (Double, Double)], next:
 }
 
 case class Split(v: Variable, left: ProofStep, right: ProofStep) extends ProofStep
+
+object ProofStep {
+
+  protected def prettyPrint(p: ProofStep, indent: Int) {
+    for (_ <- 0 until indent) print(" ")
+    p match {
+      case Conflict(f) => println("conflict with " + f)
+      case c @ Contraction(f, a, next) =>
+        println("contraction with " + f)
+        a.foreach{ case (v,(l,u)) =>
+          for (_ <- 0 until indent) print(" ")
+          println(v + " ∈ [" + l + ", " + u + "]")
+        }
+        c.pruned.foreach{ case (v,(l,u)) =>
+          for (_ <- 0 until indent) print(" ")
+          println("¬" + v + " ∈ [" + l + ", " + u + "]")
+        }
+        prettyPrint(next, indent + 2)
+      case Split(v, l, r) =>
+        println("split on " + v)
+        prettyPrint(l, indent + 2)
+        prettyPrint(r, indent + 2)
+    }
+  }
+
+  def prettyPrint(p: ProofStep) {  prettyPrint(p, 0) }
+
+}
