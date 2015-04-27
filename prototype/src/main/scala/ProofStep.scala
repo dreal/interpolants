@@ -28,12 +28,15 @@ case class Contraction(f: Formula, after: Map[Variable, (Double, Double)], next:
   }
 
   def toSplit: ProofStep = {
+    if (next.precondition == null) {
+      next.precondition = after
+    }
     pruned.foldLeft(next)( (acc, p) => {
       val (v, (lb, ub)) = p
       val c = Conflict(f)
-      c.precondition = next.precondition + p
+      c.precondition = acc.precondition + p
       val s = Split(v, acc, c)
-      s.precondition = next.precondition + (v -> precondition(v))
+      s.precondition = acc.precondition + (v -> precondition(v))
       s
     })
   }

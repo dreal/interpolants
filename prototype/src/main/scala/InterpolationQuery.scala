@@ -69,7 +69,7 @@ class InterpolationQuery(proof: ProofStep, labels: Map[Formula, Side], delta: Do
     }
   }
 
-  def fitInterpolant: Formula = {
+  def interpolant: Formula = {
     ???
   }
 

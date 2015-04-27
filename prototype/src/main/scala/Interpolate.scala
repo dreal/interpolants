@@ -37,8 +37,9 @@ object Interpolate extends dzufferey.arg.Options {
     val cb = FormulaUtils.getConjuncts(b).map( _ -> Side.B )
     val labeling = Map[Formula, Side.Side]() ++ ca ++ cb
 
-    val mkInterpolant = new InterpolationQuery(proof, labeling, delta)
-    mkInterpolant.fitInterpolant
+    //val mkInterpolant = new InterpolationQuery(proof, labeling, delta)
+    val mkInterpolant = new PiecewiseLinearInterpolant(proof, labeling)
+    mkInterpolant.interpolant
   }
 
   var lb = -10.0

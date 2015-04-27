@@ -26,7 +26,11 @@ class PiecewiseLinearInterpolant(proof: ProofStep, labels: Map[Formula, Side]) {
         case Some(B) => True()
         case _ => sys.error("conflict: formula not part of A or B ???")
       }
-    case s @ Split(v, left, right) => ite(Leq(v, Literal(s.splitAt)), extract(left), extract(right))
+    case s @ Split(v, left, right) =>
+      if (commonVariables(v)) ite(Leq(v, Literal(s.splitAt)), extract(left), extract(right))
+      else if (aVariables(v)) Or(extract(left), extract(right))
+      else if (bVariables(v)) And(extract(left), extract(right))
+      else sys.error("unknow variable")
     case c @ Contraction(f, after, next) => extract(c.toSplit)
   }
 
