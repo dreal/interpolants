@@ -1,11 +1,6 @@
 
 import dzufferey.smtlib._
 
-object Side extends Enumeration {
-  type Side = Value
-  val A, B = Value
-}
-
 import Side._
 
 class InterpolationQuery(proof: ProofStep, labels: Map[Formula, Side], delta: Double) {

@@ -2,6 +2,11 @@
 import dzufferey.smtlib._
 import dzufferey.utils._
 
+object Side extends Enumeration {
+  type Side = Value
+  val A, B = Value
+}
+
 object Interpolate extends dzufferey.arg.Options {
 
   def interpolate(lb: Double, ub: Double, a: Formula, b: Formula): Formula = {

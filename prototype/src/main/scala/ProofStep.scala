@@ -27,9 +27,30 @@ case class Contraction(f: Formula, after: Map[Variable, (Double, Double)], next:
     acc
   }
 
+  def toSplit: ProofStep = {
+    pruned.foldLeft(next)( (acc, p) => {
+      val (v, (lb, ub)) = p
+      val c = Conflict(f)
+      c.precondition = next.precondition + p
+      val s = Split(v, acc, c)
+      s.precondition = next.precondition + (v -> precondition(v))
+      s
+    })
+  }
+
 }
 
-case class Split(v: Variable, left: ProofStep, right: ProofStep) extends ProofStep
+case class Split(v: Variable, left: ProofStep, right: ProofStep) extends ProofStep {
+
+  def splitAt: Double = {
+    val (ll, lu) = left.precondition(v)
+    val (rl, ru) = right.precondition(v)
+    if (lu == rl) rl
+    else if (ll == ru) ru
+    else sys.error("not sure where the split happended")
+  }
+
+}
 
 object ProofStep {
 
