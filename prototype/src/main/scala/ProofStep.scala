@@ -60,9 +60,9 @@ object ProofStep {
   protected def prettyPrint(p: ProofStep, indent: Int) {
     for (_ <- 0 until indent) print(" ")
     p match {
-      case Conflict(f) => println("conflict with " + f)
+      case Conflict(f) => println("conflict with " + Printer.toString(f))
       case c @ Contraction(f, a, next) =>
-        println("contraction with " + f)
+        println("contraction with " + Printer.toString(f))
         a.foreach{ case (v,(l,u)) =>
           for (_ <- 0 until indent) print(" ")
           println(v + " ∈ [" + l + ", " + u + "]")

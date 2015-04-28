@@ -24,7 +24,7 @@ class PiecewiseLinearInterpolant(proof: ProofStep, labels: Map[Formula, Side]) {
       labels.get(f) match {
         case Some(A) => False()
         case Some(B) => True()
-        case _ => sys.error("conflict: formula not part of A or B ???")
+        case _ => sys.error("conflict: '"+f+"' not part of A or B ???")
       }
     case s @ Split(v, left, right) =>
       if (commonVariables(v)) ite(Leq(v, Literal(s.splitAt)), extract(left), extract(right))

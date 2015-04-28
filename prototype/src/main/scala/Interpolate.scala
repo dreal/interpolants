@@ -73,7 +73,9 @@ object Interpolate extends dzufferey.arg.Options {
 
   def parseFormula(s: String): Formula = {
     dzufferey.smtlib.Parser.parseTerm(s) match {
-      case Some(f) => f
+      case Some(f) =>
+        fixTypes(f)
+        f
       case other => sys.error("expected formula: " + other)
     }
   }
