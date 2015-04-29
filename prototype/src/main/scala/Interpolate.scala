@@ -9,19 +9,40 @@ object Side extends Enumeration {
 
 object Interpolate extends dzufferey.arg.Options {
 
-  def interpolate(lb: Double, ub: Double, a: Formula, b: Formula): Formula = {
-    //get a proof of unsat
-    val solver = new DRealHack(QF_NRA, "dReal", Array("-readable_proof"), Some(delta), true, false, None)
-    fixTypes(a)
-    fixTypes(b)
-    val vs = And(a, b).freeVariables
-    vs.foreach( v => {
+  def querySolver(f: Formula, proof: Boolean = false) = {
+    val arg = if (proof) Array("-readable_proof") else Array[String]()
+    val solver = new DRealHack(QF_NRA, "dReal", arg, Some(delta), true, false, None)
+    val f2 = FormulaUtils.nnf(f)
+    fixTypes(f2)
+    f2.freeVariables.foreach( v => {
       solver.assert(Geq(v, Literal(lb)))
       solver.assert(Leq(v, Literal(ub)))
     })
-    solver.assert(a)
-    solver.assert(b)
-    solver.checkSat(100000) /* 100 sec */ match {
+    solver.assert(f2)
+    solver.checkSat(100000) /* 100 sec */
+  }
+
+  def check(a: Formula, b: Formula, i: Formula) = {
+    val incl = i.freeVariables.subsetOf(a.freeVariables intersect b.freeVariables)
+    if (!incl) println("variables in I not in the intersection.")
+    val aCond = querySolver(And(a, Not(i))) match {
+      case UnSat => true
+      case other =>
+        println("A ∧ ¬I is not unsat: " + other)
+        false
+    } 
+    val bCond = querySolver(And(i, b)) match {
+      case UnSat => true
+      case other =>
+        println("I ∧ B is not unsat: " + other)
+        false
+    }
+    incl && aCond && bCond
+  }
+
+  def interpolate(a: Formula, b: Formula): Formula = {
+    //get a proof of unsat
+    querySolver(And(a,b), true) match {
       case UnSat => // ok
       case Sat(_) => sys.error("sat")
       case other => sys.error("not expected: " + other)
@@ -63,11 +84,14 @@ object Interpolate extends dzufferey.arg.Options {
       assert(a.isDefined, "a undefined")
       assert(b.isDefined, "b undefined")
       assert(lb < ub)
-      val i = interpolate(lb, ub, a.get, b.get)
+      val i = interpolate(a.get, b.get)
       println("interpolant: " + i)
+      check(a.get, b.get, i)
     } catch { case t: Throwable =>
       Console.err.println("failed to compute an interpolant: " + t + "\n  " + t.getStackTrace.mkString("\n  "))
       sys.exit(-1)
+    } finally {
+      Solver.executor.shutdownNow
     }
   }
 
