@@ -34,6 +34,10 @@ class PiecewiseLinearInterpolant(proof: ProofStep, labels: Map[Formula, Side]) {
     case c @ Contraction(f, after, next) => extract(c.toSplit)
   }
 
-  def interpolant: Formula = extract(proof)
+  def interpolant: Formula = {
+    val f1 = extract(proof)
+    val f2 = FormulaUtils.nnf(FormulaUtils.normalize(f1))
+    FormulaUtils.simplifyBool(f2)
+  }
 
 }

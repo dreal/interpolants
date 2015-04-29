@@ -75,7 +75,7 @@ object Interpolate extends dzufferey.arg.Options {
     dzufferey.smtlib.Parser.parseTerm(s) match {
       case Some(f) =>
         fixTypes(f)
-        f
+        FormulaUtils.nnf(FormulaUtils.normalize(f))
       case other => sys.error("expected formula: " + other)
     }
   }

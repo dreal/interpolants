@@ -29,7 +29,10 @@ object ProofParser extends scala.util.parsing.combinator.RegexParsers {
 
   def ranges: Parser[Map[Variable, (Double, Double)]] = rep(range) ^^ ( _.foldLeft(Map[Variable, (Double, Double)]())( (acc, k) => acc + (k._1 -> (k._2, k._3))))
 
-  def formula: Parser[Formula] = """.*""".r ^^ { Interpolate.parseFormula(_) }
+  //TODO polarity preceded by '!'
+  def formula: Parser[Formula] = opt("!") ~ """.*""".r ^^ { case a ~ b => val f = Interpolate.parseFormula(b)
+                                                                          val g = if (a.isDefined) Not(f) else f
+                                                                          FormulaUtils.nnf(FormulaUtils.normalize(g)) }
 
   def contraction: Parser[Contraction] =
     "[after pruning] by " ~> formula ~ ranges ~ proof ^^ { case f ~ r2 ~ p => Contraction(f, r2, p) }
