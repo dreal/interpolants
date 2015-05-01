@@ -11,7 +11,7 @@ object Interpolate extends dzufferey.arg.Options {
 
   def querySolver(f: Formula, proof: Boolean = false) = {
     val arg = if (proof) Array("-readable_proof") else Array[String]()
-    val solver = new DRealHack(QF_NRA, "dReal", arg, Some(delta), true, false, None)
+    val solver = new DRealHack(QF_NRA, solverCmd, arg, Some(delta), true, false, None)
     val f2 = FormulaUtils.nnf(f)
     fixTypes(f2)
     f2.freeVariables.foreach( v => {
@@ -62,6 +62,9 @@ object Interpolate extends dzufferey.arg.Options {
     val mkInterpolant = new PiecewiseLinearInterpolant(proof, labeling)
     mkInterpolant.interpolant
   }
+
+  var solverCmd = "dReal"
+  newOption("-s", dzufferey.arg.String( s => solverCmd = s), "solver command (default: dReal)")
 
   var lb = -10.0
   var ub =  10.0

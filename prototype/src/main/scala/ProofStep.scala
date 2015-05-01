@@ -27,6 +27,7 @@ case class Contraction(f: Formula, after: Map[Variable, (Double, Double)], next:
     acc
   }
 
+  //TODO order the blocks: the smaller part should be on the left side of the split
   def toSplit: ProofStep = {
     if (next.precondition == null) {
       next.precondition = after
@@ -50,6 +51,22 @@ case class Split(v: Variable, left: ProofStep, right: ProofStep) extends ProofSt
     val (rl, ru) = right.precondition(v)
     if (lu == rl) rl
     else if (ll == ru) ru
+    else sys.error("not sure where the split happended")
+  }
+
+  def smaller: ProofStep = {
+    val (ll, lu) = left.precondition(v)
+    val (rl, ru) = right.precondition(v)
+    if (lu == rl) left
+    else if (ll == ru) right
+    else sys.error("not sure where the split happended")
+  }
+  
+  def larger: ProofStep = {
+    val (ll, lu) = left.precondition(v)
+    val (rl, ru) = right.precondition(v)
+    if (lu == rl) right
+    else if (ll == ru) left
     else sys.error("not sure where the split happended")
   }
 
