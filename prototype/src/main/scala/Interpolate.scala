@@ -9,9 +9,9 @@ object Side extends Enumeration {
 
 object Interpolate extends dzufferey.arg.Options {
 
-  def querySolver(f: Formula, proof: Boolean = false) = {
-    val arg = if (proof) Array("-readable_proof") else Array[String]()
-    val solver = new DRealHack(QF_NRA, solverCmd, arg, Some(delta), true, false, None)
+  def querySolver(f: Formula, delta: Double, proof: Boolean = false, file: Option[String] = None) = {
+    val arg = if (proof) Array("--model","--readable-proof") else Array[String]("--model")
+    val solver = new DRealHack(QF_NRA, solverCmd, arg, Some(delta), true, false, file)
     val f2 = FormulaUtils.nnf(f)
     fixTypes(f2)
     f2.freeVariables.foreach( v => {
@@ -25,13 +25,13 @@ object Interpolate extends dzufferey.arg.Options {
   def check(a: Formula, b: Formula, i: Formula) = {
     val incl = i.freeVariables.subsetOf(a.freeVariables intersect b.freeVariables)
     if (!incl) println("variables in I not in the intersection.")
-    val aCond = querySolver(And(a, Not(i))) match {
+    val aCond = querySolver(And(a, Not(i)), deltaCheck) match {
       case UnSat => true
       case other =>
         println("A ∧ ¬I is not unsat: " + other)
         false
     } 
-    val bCond = querySolver(And(i, b)) match {
+    val bCond = querySolver(And(i, b), deltaCheck) match {
       case UnSat => true
       case other =>
         println("I ∧ B is not unsat: " + other)
@@ -42,7 +42,7 @@ object Interpolate extends dzufferey.arg.Options {
 
   def interpolate(a: Formula, b: Formula): Formula = {
     //get a proof of unsat
-    querySolver(And(a,b), true) match {
+    querySolver(And(a,b), delta, true) match {
       case UnSat => // ok
       case Sat(_) => sys.error("sat")
       case other => sys.error("not expected: " + other)
@@ -79,6 +79,12 @@ object Interpolate extends dzufferey.arg.Options {
   var delta  = 0.1
   newOption("-d", dzufferey.arg.Real( r => delta = r), "delta")
   
+  var deltaCheck  = 0.1
+  newOption("-dc", dzufferey.arg.Real( r => deltaCheck = r), "delta for checking")
+
+  newOption("-v", dzufferey.arg.Unit(() => Logger.moreVerbose), "increase the verbosity level.")
+  newOption("-q", dzufferey.arg.Unit(() => Logger.lessVerbose), "decrease the verbosity level.")
+
   val usage = "-a f_a -b f_b"
 
   def main(args: Array[String]) {
