@@ -1,6 +1,7 @@
 
 import dzufferey.smtlib._
 
+import Utils._
 import Side._
 
 class InterpolationQuery(proof: ProofStep, labels: Map[Formula, Side], delta: Double) {
@@ -34,7 +35,7 @@ class InterpolationQuery(proof: ProofStep, labels: Map[Formula, Side], delta: Do
     while (again) {
       val solver = DReal(QF_NRA, delta)
       cstr.foreach( c => {
-        Interpolate.fixTypes(c)
+        fixTypes(c)
         solver.assert(c)
       })
       solver.checkSat(100000) match {

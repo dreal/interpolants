@@ -3,6 +3,7 @@ import dzufferey.smtlib._
 import dzufferey.utils._
 import dzufferey.utils.LogLevel._
 import java.io._
+import Utils._
 
 object ProofParser extends scala.util.parsing.combinator.RegexParsers {
 
@@ -30,7 +31,7 @@ object ProofParser extends scala.util.parsing.combinator.RegexParsers {
   def ranges: Parser[Map[Variable, (Double, Double)]] = rep(range) ^^ ( _.foldLeft(Map[Variable, (Double, Double)]())( (acc, k) => acc + (k._1 -> (k._2, k._3))))
 
   //TODO polarity preceded by '!'
-  def formula: Parser[Formula] = opt("!") ~ """.*""".r ^^ { case a ~ b => val f = Interpolate.parseFormula(b)
+  def formula: Parser[Formula] = opt("!") ~ """.*""".r ^^ { case a ~ b => val f = parseFormula(b)
                                                                           val g = if (a.isDefined) Not(f) else f
                                                                           FormulaUtils.nnf(FormulaUtils.normalize(g)) }
 

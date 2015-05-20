@@ -1,5 +1,6 @@
 
 import dzufferey.smtlib._
+import Utils._
 import Side._
 
 

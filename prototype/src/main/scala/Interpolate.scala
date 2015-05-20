@@ -1,6 +1,7 @@
 
 import dzufferey.smtlib._
 import dzufferey.utils._
+import Utils._
 
 object Side extends Enumeration {
   type Side = Value
@@ -42,7 +43,11 @@ object Interpolate extends dzufferey.arg.Options {
 
   def interpolate(a: Formula, b: Formula): Formula = {
     //get a proof of unsat
-    querySolver(And(a,b), delta, true) match {
+    val a0 = if (w > 0.0) weaken(a, w) else a
+    val b0 = if (w > 0.0) weaken(b, w) else b
+    val f = And(a0, b0)
+
+    querySolver(f, delta, true) match {
       case UnSat => // ok
       case Sat(_) => sys.error("sat")
       case other => sys.error("not expected: " + other)
@@ -54,8 +59,8 @@ object Interpolate extends dzufferey.arg.Options {
     ProofStep.prettyPrint(proof)
 
     //label clause by side
-    val ca = FormulaUtils.getConjuncts(a).map( _ -> Side.A )
-    val cb = FormulaUtils.getConjuncts(b).map( _ -> Side.B )
+    val ca = FormulaUtils.getConjuncts(a0).map( _ -> Side.A )
+    val cb = FormulaUtils.getConjuncts(b0).map( _ -> Side.B )
     val labeling = Map[Formula, Side.Side]() ++ ca ++ cb
 
     //val mkInterpolant = new InterpolationQuery(proof, labeling, delta)
@@ -65,6 +70,9 @@ object Interpolate extends dzufferey.arg.Options {
 
   var solverCmd = "dReal"
   newOption("-s", dzufferey.arg.String( s => solverCmd = s), "solver command (default: dReal)")
+
+  var w = 0.0
+  newOption("-w", dzufferey.arg.Real( s => w = s), "weakening before building the proof")
 
   var lb = -10.0
   var ub =  10.0
@@ -103,25 +111,5 @@ object Interpolate extends dzufferey.arg.Options {
       Solver.executor.shutdownNow
     }
   }
-
-  def parseFormula(s: String): Formula = {
-    dzufferey.smtlib.Parser.parseTerm(s) match {
-      case Some(f) =>
-        fixTypes(f)
-        FormulaUtils.nnf(FormulaUtils.normalize(f))
-      case other => sys.error("expected formula: " + other)
-    }
-  }
-  
-  def fixTypes(f: Formula) {
-    val t = new FormulaUtils.Traverser {
-      override def traverse(f: Formula) {
-        super.traverse(f)
-        if (f.tpe == Int || f.tpe == Wildcard) f.setType(Real)
-      }
-    }
-    t.traverse(f)
-  }
-
 
 }
