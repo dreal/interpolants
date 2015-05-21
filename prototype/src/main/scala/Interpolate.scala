@@ -41,7 +41,7 @@ object Interpolate extends dzufferey.arg.Options {
     incl && aCond && bCond
   }
 
-  def interpolate(a: Formula, b: Formula): Formula = {
+  def interpolate(a: Formula, b: Formula) {
     //get a proof of unsat
     val a0 = if (w > 0.0) weaken(a, w) else a
     val b0 = if (w > 0.0) weaken(b, w) else b
@@ -65,7 +65,12 @@ object Interpolate extends dzufferey.arg.Options {
 
     //val mkInterpolant = new InterpolationQuery(proof, labeling, delta)
     val mkInterpolant = new PiecewiseLinearInterpolant(proof, labeling)
-    mkInterpolant.interpolant
+    val i = mkInterpolant.interpolant
+    println("interpolant: " + i)
+    check(a, b, i)
+    val cubes = mkInterpolant.hyperCubes(lb, ub)
+    println("cubes: ")
+    cubes.foreach( m => println(m.map{ case (v, (lb, ub)) => v + " ∈ [" + lb + ", " + ub +"]"}.mkString("  ", ", ","")))
   }
 
   var solverCmd = "dReal"
@@ -101,9 +106,7 @@ object Interpolate extends dzufferey.arg.Options {
       assert(a.isDefined, "a undefined")
       assert(b.isDefined, "b undefined")
       assert(lb < ub)
-      val i = interpolate(a.get, b.get)
-      println("interpolant: " + i)
-      check(a.get, b.get, i)
+      interpolate(a.get, b.get)
     } catch { case t: Throwable =>
       Console.err.println("failed to compute an interpolant: " + t + "\n  " + t.getStackTrace.mkString("\n  "))
       sys.exit(-1)
