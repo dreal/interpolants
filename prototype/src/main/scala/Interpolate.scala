@@ -11,7 +11,7 @@ object Side extends Enumeration {
 object Interpolate extends dzufferey.arg.Options {
 
   def querySolver(f: Formula, delta: Double, proof: Boolean = false, file: Option[String] = None) = {
-    val arg = if (proof) Array("--model","--readable-proof") else Array[String]("--model")
+    val arg = if (proof) Array("--model","--readable-proof", "--no-simp") else Array[String]("--model")
     val solver = new DRealHack(QF_NRA, solverCmd, arg, Some(delta), true, false, file)
     val f2 = FormulaUtils.nnf(f)
     fixTypes(f2)
@@ -66,10 +66,10 @@ object Interpolate extends dzufferey.arg.Options {
     //val mkInterpolant = new InterpolationQuery(proof, labeling, delta)
     val mkInterpolant = new PiecewiseLinearInterpolant(proof, labeling)
     val i = mkInterpolant.interpolant
-    println("interpolant: " + i)
+    println("interpolant:\n  " + i)
     check(a, b, i)
     val cubes = mkInterpolant.hyperCubes(lb, ub)
-    println("cubes: ")
+    println("cubes:")
     cubes.foreach( m => println(m.map{ case (v, (lb, ub)) => v + " ∈ [" + lb + ", " + ub +"]"}.mkString("  ", ", ","")))
   }
 
@@ -101,6 +101,7 @@ object Interpolate extends dzufferey.arg.Options {
   val usage = "-a f_a -b f_b"
 
   def main(args: Array[String]) {
+    Logger.disallow("Typer")
     try {
       apply(args)
       assert(a.isDefined, "a undefined")

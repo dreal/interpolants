@@ -1,0 +1,383 @@
+/* [wxMaxima batch file version 1] [ DO NOT EDIT BY HAND! ]*/
+/* [ Created with wxMaxima version 13.04.2 ] */
+
+/* [wxMaxima: section start ]
+Definitions
+   [wxMaxima: section end   ] */
+
+/* [wxMaxima: comment start ]
+Rotations are represented using (unit) quaternions, [a, i, j, k]
+Positions are represented using 3D vectors, [x, y, z]
+A vector is expended into a quaternion as [0, x, y, z]
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: input   start ] */
+v2q(q) := [0, q[1], q[2], q[3]] $
+q2v(q) := [q[2],q[3],q[4]] $
+mkQuat(alpha, direction) := cons(cos(alpha/2), sin(alpha/2) * direction) $
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: comment start ]
+Hammilton product for quaternions
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: input   start ] */
+mult(a, b) := [ a[1] * b[1] - a[2] * b[2] - a[3] * b[3] - a[4] * b[4],
+                a[1] * b[2] + a[2] * b[1] + a[3] * b[4] - a[4] * b[3],
+                a[1] * b[3] - a[2] * b[4] + a[3] * b[1] + a[4] * b[2],
+                a[1] * b[4] + a[2] * b[3] - a[3] * b[2] + a[4] * b[1]] $
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: comment start ]
+The inverse (^-1) of a quaternion
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: input   start ] */
+inverse(a) := [a[1], -a[2], -a[3], -a[4]] $
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: comment start ]
+rotation of p by q as q*p*q^-1
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: input   start ] */
+rotate(p, q) := ratsimp(q2v(mult(mult(q, v2q(p)), inverse(q)))) $
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: comment start ]
+size of quaternion
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: input   start ] */
+size(a) := sqrt(a[1] * a[1] + a[2] * a[2] + a[3] * a[3] + a[4] * a[4]) $
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: comment start ]
+unit quaternion
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: input   start ] */
+unit(a) := a[1] * a[1] + a[2] * a[2] + a[3] * a[3] + a[4] * a[4] = 1 $
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: comment start ]
+equality for quaternions and vectors
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: input   start ] */
+vecEq(a, b) := [a[1] = b[1], a[2] = b[2], a[3] = b[3]] $
+quatEq(a, b) := [a[1] = b[1], a[2] = b[2], a[3] = b[3], a[4] = b[4]] $
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: comment start ]
+strucutres for the different elements:
+-p: vector for the position in the parent frame
+-q: unit quaternion for the orientation
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: input   start ] */
+defstruct(frame(p, q)) $
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: comment start ]
+macro to move things in and out of frames
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: input   start ] */
+vecFromFrame(f, p) := f@p + rotate(p, f@q) $
+vecToFrame(p, f) := rotate(p - f@p, inverse(f@q)) $
+quatFromFrame(f, q) := mult(f@q, q) $
+quatToFrame(q, f) := mult(inverse(f@q), q) $
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: comment start ]
+macros to generate constraints
+-connect(frame0, offset0, frame1, offset1): make two frame agree on the same point (3-dof rotation)
+-align(frame0, direction0, frame1, direction1): allign two unit vectors in different frames (3-dof translation)
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: input   start ] */
+connect(f0, o0, f1, o1) := vecEq(vecFromFrame(f0, o0), vecFromFrame(f1, o1)) $
+align(f0, d0, f1, d1) := quatEq(quatFromFrame(f0, d0), quatFromFrame(f1, d1)) $
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: comment start ]
+fixed joint: 0-dof
+j0,1 are [frame, offset, rotation]
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: input   start ] */
+fixed(j0, j1) := append(connect(j0[1], j0[2], j1[1], j1[2]), align(j0[1], j0[3], j1[1], j1[3])) $
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: comment start ]
+revolute joint: 1-dof rotation
+j0,1 are [frame, offset, direction]
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: input   start ] */
+revolute(j0, j1) := append(connect(j0[1], j0[2], j1[1], j1[2]), connect(j0[1], j0[3], j1[1], j1[3])) $
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: subsect start ]
+pretty printing
+   [wxMaxima: subsect end   ] */
+
+/* [wxMaxima: comment start ]
+this prints the new lines correctly in the console
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: input   start ] */
+dRealHeader: printf(false, "(set-option :precision 0.01)~%(set-logic QF_NRA)");
+dRealFooter: printf(false, "(check-sat)~%(exit)");
+concatLines(lst) := lreduce(lambda([x,y], printf(false, "~a~%~a", x, y)), lst);
+var(v, lb, ub) := concatLines([printf(false, "(declare-fun ~a () Real)", v),
+                               printf(false, "(assert (>= ~a ~a))", v, lb),
+                               printf(false, "(assert (<= ~a ~a))", v, ub)]);
+declareVars(t, lb, ub) := concatLines(map(lambda([x], var(x, lb, ub)), listofvars(t)));
+assert(t) := printf(false, "(assert ~a)", pp(t));
+pp(t) := if atom(t) then sconcat(t, " ")
+         else if op(t) = "[" then pp(apply("and", t))
+         else lreduce(sconcat, append(map(pp, args(t)), [") "]),sconcat("( ", op(t), " "));
+dRealQuery(t, lb, ub) := block([ d0: declareVars(t, lb, ub),
+                          d1: if op(t) = "[" then concatLines(map(assert, t)) else assert(t)
+                        ],
+                        concatLines([dRealHeader, d0, d1, dRealFooter]));
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: section start ]
+equations for simple robotic arms
+   [wxMaxima: section end   ] */
+
+/* [wxMaxima: comment start ]
+inputs of the servo
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: input   start ] */
+\alpha;
+\beta;
+\gamma;
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: comment start ]
+parameter of the model:
+ - arm_a is the length of the upper arm and the connector
+ - arm_b is the length of the lower arm
+ - arm_a_servo is the length of the piece connecting the \beta servo to the connector arm
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: input   start ] */
+arm_a: [148, 0, 0];
+arm_b: [160, 0, 0];
+servo2arma: [-50, 0, 0];
+zero: [0, 0, 0];
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: comment start ]
+structural elements:
+-base
+-lower arm
+-upper arm (the one controlled by \alpha)
+-connector arm (the one controlled by \beta)
+-(x,y,z) position of the effector
+each element has a position vector and an rotation quaternion
+since the servo for the lower arm is connected to the base, the rotation of the lower arm depends only on the base.
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: input   start ] */
+ground: new (frame ([0,0,0], [1,0,0,0]));
+base: new (frame ([bx,by,bz], [ba,bi,bj,bk]));
+upper: new (frame ([ux, uy, uz], [ua, ui, uj, uk]));
+lower: new (frame ([lx, ly, lz], [la, li, lj, lk]));
+effector: new (frame ([x,y,z], [ea, ei, ej, ek]));
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+servo0: mkQuat(\gamma, [0,0,1]) $
+servo1: mkQuat(\alpha, [0,1,0]) $
+servo2: mkQuat(\beta,  [0,1,0]) $
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: subsect start ]
+model without connector (servo on joint between the 2 arms)
+   [wxMaxima: subsect end   ] */
+
+/* [wxMaxima: input   start ] */
+model1: append(
+    [unit(upper@q), unit(lower@q), unit(effector@q), unit(base@q)],
+    fixed([ground, zero, servo0],   [base, zero, [1,0,0,0]]),
+    fixed([base, zero, servo1],   [upper, zero, [1,0,0,0]]),
+    fixed([upper, arm_a, servo0], [lower, zero, [1,0,0,0]]),
+    fixed([lower, arm_b, [1,0,0,0]], [effector, zero, [1,0,0,0]])
+);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: subsect start ]
+model with connector
+   [wxMaxima: subsect end   ] */
+
+/* [wxMaxima: comment start ]
+new structural elements:
+-connector: the parts that connects the servo to upperC
+-upperC: the second upper arm
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: input   start ] */
+connector: new (frame ([cx, cy, cz], [ca, ci, cj, ck]));
+upperC: new (frame ([ucx, ucy, ucz], [uca, uci, ucj, uck]));
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: comment start ]
+constraints
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: input   start ] */
+model2: append(
+    [unit(upper@q), unit(lower@q), unit(effector@q), unit(connector@q), unit(upperC@q), unit(base@q)],
+    fixed([ground, zero, servo0], [base, zero, [1,0,0,0]]),
+    fixed([base, zero, servo1],   [upper, zero, [1,0,0,0]]),
+    fixed([base, zero, servo2],   [connector, zero, [1,0,0,0]]),
+    revolute([connector, servo2arma, [0,1,0]], [upperC, zero, [0,1,0]]),
+    revolute([upper, arm_a, [0,1,0]], [lower, zero, [0,1,0]]),
+    revolute([upperC, arm_a, [0,1,0]], [lower, servo2arma, [0,1,0]]),
+    fixed([lower, arm_b, [1,0,0,0]], [effector, zero, [1,0,0,0]])
+);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: subsect start ]
+model with effector offset and second connector
+   [wxMaxima: subsect end   ] */
+
+/* [wxMaxima: comment start ]
+new structural elements:
+-balance: part at the joint between the two arms
+-upperB: part connected to the base and the balance
+-lowerB: part connected to the balance and the effector
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: input   start ] */
+balance: new (frame ([bx, by, bz], [ba, bi, bj, bk]));
+upperB: new (frame ([ubx, uby, ubz], [uba, ubi, ubj, ubk]));
+lowerB: new (frame ([lbx, lby, lbz], [lba, lbi, lbj, lbk]));
+offset1: [-50,0,50];
+offset2: [ 50,0,50];
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: comment start ]
+constraints
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: input   start ] */
+model3: append(
+    [unit(upper@q), unit(lower@q), unit(effector@q), unit(connector@q), unit(upperC@q), unit(base@q)],
+    fixed([ground, zero, servo0], [base, zero, [1,0,0,0]]),
+    fixed([base, zero, servo1],   [upper, zero, [1,0,0,0]]),
+    fixed([base, zero, servo2],   [connector, zero, [1,0,0,0]]),
+    revolute([connector, servo2arma, [0,1,0]], [upperC, zero, [0,1,0]]),
+    revolute([upper, arm_a, [0,1,0]], [lower, zero, [0,1,0]]),
+    revolute([upperC, arm_a, [0,1,0]], [lower, servo2arma, [0,1,0]]),
+    revolute([lower, arm_b, [0,1,0]], [effector, zero, [0,1,0]]),
+    revolute([base, offset1, [0,1,0]], [upperB, zero, [0,1,0]]),
+    revolute([upper, arm_a, [0,1,0]], [balance, zero, [0,1,0]]),
+    revolute([upperB, arm_a, [0,1,0]], [balance, offset1, [0,1,0]]),
+    revolute([balance, offset2, [0,1,0]], [lowerB, zero, [0,1,0]]),
+    revolute([lowerB, zero, [0,1,0]], [effector, offset2, [0,1,0]])
+);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: section start ]
+equations for Stewart platform
+   [wxMaxima: section end   ] */
+
+/* [wxMaxima: comment start ]
+semi-regular hexagon:
+-frame
+-radius
+-alpha (>= 0, < pi/3)
+-legs
+-index (1, 2) in the legs array
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: input   start ] */
+hexa(f, r, a, l, i) := trigreduce(append(
+  vecEq(l[1][i], vecFromFrame(f, rotate([radius,0,0], mkQuat(       -alpha, [0,0,1])))),
+  vecEq(l[2][i], vecFromFrame(f, rotate([radius,0,0], mkQuat(        alpha, [0,0,1])))),
+  vecEq(l[3][i], vecFromFrame(f, rotate([radius,0,0], mkQuat(2*%pi/3-alpha, [0,0,1])))),
+  vecEq(l[4][i], vecFromFrame(f, rotate([radius,0,0], mkQuat(2*%pi/3+alpha, [0,0,1])))),
+  vecEq(l[5][i], vecFromFrame(f, rotate([radius,0,0], mkQuat(4*%pi/3-alpha, [0,0,1])))),
+  vecEq(l[6][i], vecFromFrame(f, rotate([radius,0,0], mkQuat(4*%pi/3+alpha, [0,0,1]))))
+));
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: comment start ]
+the 6 legs: two end points + control variables
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: input   start ] */
+leg0: [[l00x, l00y, l00z], [l10x, l10y, l10z], l0];
+leg1: [[l01x, l01y, l01z], [l11x, l11y, l11z], l1];
+leg2: [[l02x, l02y, l02z], [l12x, l12y, l12z], l2];
+leg3: [[l03x, l03y, l03z], [l13x, l13y, l13z], l3];
+leg4: [[l04x, l04y, l04z], [l14x, l14y, l14z], l4];
+leg5: [[l05x, l05y, l05z], [l15x, l15y, l15z], l5];
+legs: [leg0, leg1, leg2, leg3, leg4, leg5];
+norm(a) := sqrt(a[1] * a[1] + a[2] * a[2] + a[3] * a[3]) $
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: comment start ]
+the base is the same as for the other arm
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: comment start ]
+the platform
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: input   start ] */
+platform: new (frame ([sx,sy,sz], [sa,si,sj,sk]));
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: comment start ]
+the constraints
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: input   start ] */
+model4: append(
+    [unit(platform@q)],
+    vecEq(base@p, [0, 0, 0]),
+    quatEq(base@q, [1, 0, 0, 0]),
+    hexa(base, 10, %pi/12, legs, 1),
+    hexa(platform, 4, %pi/12, legs, 2),
+    map(lambda([x], x[3] = norm(x[1] - x[2])), legs)
+);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: section start ]
+dReal queries
+   [wxMaxima: section end   ] */
+
+/* [wxMaxima: input   start ] */
+s: openw("model1.smt2");
+printf(s, dRealQuery(model1, -1000, 1000));
+close(s);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+s: openw("model2.smt2");
+printf(s, dRealQuery(model2, -1000, 1000));
+close(s);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+s: openw("model3.smt2");
+printf(s, dRealQuery(model3, -1000, 1000));
+close(s);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+s: openw("model4.smt2");
+printf(s, dRealQuery(model4, -1000, 1000));
+close(s);
+/* [wxMaxima: input   end   ] */
+
+/* Maxima can't load/batch files which end with a comment! */
+"Created with wxMaxima"$

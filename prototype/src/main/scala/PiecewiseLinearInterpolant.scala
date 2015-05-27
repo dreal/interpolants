@@ -69,7 +69,7 @@ class PiecewiseLinearInterpolant(proof: ProofStep, labels: Map[Formula, Side]) {
     val init = commonVariables.map(v => v -> (lb, ub)).toMap
     val cubes = traverse(interpolant, init)
     //filter the empty ones
-    cubes.filter( c => c.forall{ case (_, (l, u)) => l <= u} )
+    cubes.filter( c => c.forall{ case (_, (l, u)) => l < u} )
   }
 
 }
