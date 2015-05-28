@@ -207,7 +207,7 @@ model1: append(
     [unit(upper@q), unit(lower@q), unit(effector@q), unit(base@q)],
     fixed([ground, zero, servo0],   [base, zero, [1,0,0,0]]),
     fixed([base, zero, servo1],   [upper, zero, [1,0,0,0]]),
-    fixed([upper, arm_a, servo0], [lower, zero, [1,0,0,0]]),
+    fixed([upper, arm_a, servo2], [lower, zero, [1,0,0,0]]),
     fixed([lower, arm_b, [1,0,0,0]], [effector, zero, [1,0,0,0]])
 );
 /* [wxMaxima: input   end   ] */
@@ -357,19 +357,19 @@ dReal queries
 
 /* [wxMaxima: input   start ] */
 s: openw("model1.smt2");
-printf(s, dRealQuery(model1, -1000, 1000));
+printf(s, dRealQuery(model1, -500, 500));
 close(s);
 /* [wxMaxima: input   end   ] */
 
 /* [wxMaxima: input   start ] */
 s: openw("model2.smt2");
-printf(s, dRealQuery(model2, -1000, 1000));
+printf(s, dRealQuery(model2, -500, 500));
 close(s);
 /* [wxMaxima: input   end   ] */
 
 /* [wxMaxima: input   start ] */
 s: openw("model3.smt2");
-printf(s, dRealQuery(model3, -1000, 1000));
+printf(s, dRealQuery(model3, -500, 500));
 close(s);
 /* [wxMaxima: input   end   ] */
 
