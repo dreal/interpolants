@@ -91,6 +91,24 @@ quatToFrame(q, f) := mult(inverse(f@q), q) $
 /* [wxMaxima: input   end   ] */
 
 /* [wxMaxima: comment start ]
+domain constraints
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: input   start ] */
+boundFrame(f, lb, ub) := [
+    unit(f@q),
+    f@q[1] >= -1, f@q[1] <= 1,
+    f@q[2] >= -1, f@q[2] <= 1,
+    f@q[3] >= -1, f@q[3] <= 1,
+    f@q[4] >= -1, f@q[4] <= 1,
+    f@p[1] >= lb, f@p[1] <= ub,
+    f@p[2] >= lb, f@p[2] <= ub,
+    f@p[3] >= lb, f@p[3] <= ub
+] $  
+boundAngle(a) := [a >= - 3.15, a <= 3.15] $
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: comment start ]
 macros to generate constraints
 -connect(frame0, offset0, frame1, offset1): make two frame agree on the same point (3-dof rotation)
 -align(frame0, direction0, frame1, direction1): allign two unit vectors in different frames (3-dof translation)
@@ -131,18 +149,16 @@ this prints the new lines correctly in the console
 dRealHeader: printf(false, "(set-option :precision 0.01)~%(set-logic QF_NRA)");
 dRealFooter: printf(false, "(check-sat)~%(exit)");
 concatLines(lst) := lreduce(lambda([x,y], printf(false, "~a~%~a", x, y)), lst);
-var(v, lb, ub) := concatLines([printf(false, "(declare-fun ~a () Real)", v),
-                               printf(false, "(assert (>= ~a ~a))", v, lb),
-                               printf(false, "(assert (<= ~a ~a))", v, ub)]);
-declareVars(t, lb, ub) := concatLines(map(lambda([x], var(x, lb, ub)), listofvars(t)));
+var(v) := printf(false, "(declare-fun ~a () Real)", v);
+declareVars(t) := concatLines(map(var, listofvars(t)));
 assert(t) := printf(false, "(assert ~a)", pp(t));
 pp(t) := if atom(t) then sconcat(t, " ")
          else if op(t) = "[" then pp(apply("and", t))
          else lreduce(sconcat, append(map(pp, args(t)), [") "]),sconcat("( ", op(t), " "));
-dRealQuery(t, lb, ub) := block([ d0: declareVars(t, lb, ub),
-                          d1: if op(t) = "[" then concatLines(map(assert, t)) else assert(t)
-                        ],
-                        concatLines([dRealHeader, d0, d1, dRealFooter]));
+dRealQuery(t) := block([ d0: declareVars(t),
+                         d1: if op(t) = "[" then concatLines(map(assert, t)) else assert(t)
+                       ],
+                       concatLines([dRealHeader, d0, d1, dRealFooter]));
 /* [wxMaxima: input   end   ] */
 
 /* [wxMaxima: section start ]
@@ -203,8 +219,14 @@ model without connector (servo on joint between the 2 arms)
    [wxMaxima: subsect end   ] */
 
 /* [wxMaxima: input   start ] */
-model1: append(
-    [unit(upper@q), unit(lower@q), unit(effector@q), unit(base@q)],
+model1(lb, ub) := append(
+    boundFrame(upper, lb, ub),
+    boundFrame(lower, lb, ub),
+    boundFrame(effector, lb, ub),
+    boundFrame(base, lb, ub),
+    boundAngle(\alpha),
+    boundAngle(\beta),
+    boundAngle(\gamma),
     fixed([ground, zero, servo0],   [base, zero, [1,0,0,0]]),
     fixed([base, zero, servo1],   [upper, zero, [1,0,0,0]]),
     fixed([upper, arm_a, servo2], [lower, zero, [1,0,0,0]]),
@@ -232,8 +254,16 @@ constraints
    [wxMaxima: comment end   ] */
 
 /* [wxMaxima: input   start ] */
-model2: append(
-    [unit(upper@q), unit(lower@q), unit(effector@q), unit(connector@q), unit(upperC@q), unit(base@q)],
+model2(lb, ub) := append(
+    boundFrame(upper, lb, ub),
+    boundFrame(lower, lb, ub),
+    boundFrame(effector, lb, ub),
+    boundFrame(base, lb, ub),
+    boundFrame(upperC, lb, ub),
+    boundFrame(connector, lb, ub),
+    boundAngle(\alpha),
+    boundAngle(\beta),
+    boundAngle(\gamma),
     fixed([ground, zero, servo0], [base, zero, [1,0,0,0]]),
     fixed([base, zero, servo1],   [upper, zero, [1,0,0,0]]),
     fixed([base, zero, servo2],   [connector, zero, [1,0,0,0]]),
@@ -268,8 +298,19 @@ constraints
    [wxMaxima: comment end   ] */
 
 /* [wxMaxima: input   start ] */
-model3: append(
-    [unit(upper@q), unit(lower@q), unit(effector@q), unit(connector@q), unit(upperC@q), unit(base@q)],
+model3(lb, ub) := append(
+    boundFrame(upper, lb, ub),
+    boundFrame(lower, lb, ub),
+    boundFrame(effector, lb, ub),
+    boundFrame(base, lb, ub),
+    boundFrame(upperC, lb, ub),
+    boundFrame(connector, lb, ub),
+    boundFrame(balance, lb, ub),
+    boundFrame(upperB, lb, ub),
+    boundFrame(lowerB, lb, ub),
+    boundAngle(\alpha),
+    boundAngle(\beta),
+    boundAngle(\gamma),
     fixed([ground, zero, servo0], [base, zero, [1,0,0,0]]),
     fixed([base, zero, servo1],   [upper, zero, [1,0,0,0]]),
     fixed([base, zero, servo2],   [connector, zero, [1,0,0,0]]),
@@ -341,8 +382,11 @@ the constraints
    [wxMaxima: comment end   ] */
 
 /* [wxMaxima: input   start ] */
-model4: append(
-    [unit(platform@q)],
+model4(lb, ub) := append(
+    boundFrame(platform, lb, ub),
+    boundFrame(base, lb, ub),
+    map(lambda([x], x >= lb), listofvars(legs)),
+    map(lambda([x], x <= ub), listofvars(legs)),
     vecEq(base@p, [0, 0, 0]),
     quatEq(base@q, [1, 0, 0, 0]),
     hexa(base, 10, %pi/12, legs, 1),
@@ -357,25 +401,25 @@ dReal queries
 
 /* [wxMaxima: input   start ] */
 s: openw("model1.smt2");
-printf(s, dRealQuery(model1, -500, 500));
+printf(s, dRealQuery(model1(-500, 500)));
 close(s);
 /* [wxMaxima: input   end   ] */
 
 /* [wxMaxima: input   start ] */
 s: openw("model2.smt2");
-printf(s, dRealQuery(model2, -500, 500));
+printf(s, dRealQuery(model2(-500, 500)));
 close(s);
 /* [wxMaxima: input   end   ] */
 
 /* [wxMaxima: input   start ] */
 s: openw("model3.smt2");
-printf(s, dRealQuery(model3, -500, 500));
+printf(s, dRealQuery(model3(-500, 500)));
 close(s);
 /* [wxMaxima: input   end   ] */
 
 /* [wxMaxima: input   start ] */
 s: openw("model4.smt2");
-printf(s, dRealQuery(model4, -1000, 1000));
+printf(s, dRealQuery(model4(-1000, 1000)));
 close(s);
 /* [wxMaxima: input   end   ] */
 
