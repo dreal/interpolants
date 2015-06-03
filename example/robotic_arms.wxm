@@ -226,8 +226,8 @@ model0(lb, ub) := append(
     boundAngle(\alpha),
     boundAngle(\gamma),
     fixed([ground, zero, servo0],   [base, zero, [1,0,0,0]]),
-    fixed([upper, zero, servo1],   [upper, zero, [1,0,0,0]]),
-    fixed([base, arm_a, [1,0,0,0]],   [effector, zero, [1,0,0,0]])
+    fixed([base, zero, servo1],   [upper, zero, [1,0,0,0]]),
+    fixed([upper, arm_a, [1,0,0,0]],   [effector, zero, [1,0,0,0]])
 );
 /* [wxMaxima: input   end   ] */
 
@@ -413,6 +413,37 @@ model4(lb, ub) := append(
 /* [wxMaxima: input   end   ] */
 
 /* [wxMaxima: section start ]
+model for the foldable arm from Ankur et.al.
+   [wxMaxima: section end   ] */
+
+/* [wxMaxima: input   start ] */
+segment: [100,0,0];
+segment0: new (frame ([s0x,s0y,s0z], [s0a,s0i,s0j,s0k]));
+segment1: new (frame ([s1x,s1y,s1z], [s1a,s1i,s1j,s1k]));
+segment2: new (frame ([s2x,s2y,s2z], [s2a,s2i,s2j,s2k]));
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: comment start ]
+the contraints
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: input   start ] */
+model5(lb, ub) := append(
+    boundFrame(segment0, lb, ub),
+    boundFrame(segment2, lb, ub),
+    boundFrame(segment2, lb, ub),
+    boundFrame(effector, lb, ub),
+    boundAngle(\alpha),
+    boundAngle(\beta),
+    boundAngle(\gamma),
+    fixed([ground,   zero,    mkQuat(\alpha, [0,0,1])], [segment0, zero, [1,0,0,0]]),
+    fixed([segment0, segment, mkQuat(\beta,  [0,0,1])], [segment1, zero, [1,0,0,0]]),
+    fixed([segment1, segment, mkQuat(\gamma, [0,0,1])], [segment2, zero, [1,0,0,0]]),
+    fixed([segment2, segment, [1,0,0,0]],               [effector, zero, [1,0,0,0]])
+);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: section start ]
 dReal queries
    [wxMaxima: section end   ] */
 
@@ -443,6 +474,12 @@ close(s);
 /* [wxMaxima: input   start ] */
 s: openw("model4.smt2");
 printf(s, dRealQuery(model4(-1000, 1000)));
+close(s);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+s: openw("model5.smt2");
+printf(s, dRealQuery(model5(-350, 350)));
 close(s);
 /* [wxMaxima: input   end   ] */
 
