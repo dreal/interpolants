@@ -11,7 +11,7 @@ object Side extends Enumeration {
 object Interpolate extends dzufferey.arg.Options {
 
   def querySolver(f: Formula, delta: Double, proof: Boolean = false, file: Option[String] = None) = {
-    val arg = if (proof) Array("--model","--readable-proof", "--no-simp") else Array[String]("--model")
+    val arg = if (proof) Array("--in","--model","--readable-proof","--no-simp") else Array[String]("--in","--model")
     val solver = new DRealHack(QF_NRA, solverCmd, arg, Some(delta), true, false, file)
     val f2 = FormulaUtils.nnf(f)
     fixTypes(f2)
