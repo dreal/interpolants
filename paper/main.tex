@@ -1,6 +1,11 @@
 \documentclass{acm_proc_article-sp}
 
 \usepackage{graphicx,epsfig,amssymb,amsmath}
+\usepackage{mathpartir}
+
+\usepackage[utf8]{inputenc}
+\usepackage{newunicodechar}
+\include{macro_unicode}
 
 \newcommand{\lrf}{\mathcal{L}_{\mathbb{R}_{\mathcal{F}}}}
 \newtheorem{definition}{Definition}
@@ -35,7 +40,60 @@ Applications.
 
 \section{Preliminaries}
 
-Delta-Decisions, Proof Trees
+\paragraph{Craig interpolation}
+Given $A$,$B$ such that $A ∧ B$ is unsatisfiable, an interpolant $I$ is a formula satisfying:
+\begin{itemize}
+\item $A ⇒ I$;
+\item $I ∧ B$ is unsatisfiable;
+\item $I$ contains only variables common to $A$ and $B$.
+\end{itemize}
+
+\paragraph{δ-satifiability}
+
+\paragraph{δ-unsatisfiability proof}
+
+The complete theory behind proof extraction from $\delta$-decision procedure is available in \cite{}.
+Here, we described a simplified version.
+The proof is divides the solution space until it can prove, using interval arithmetic, that each small piece of the solution space is empty.
+The solver uses constraints propagation and pruning steps to limit the amount of branching required.
+However, the proof it produces only need to consider two main rules: splitting and theory lemma.
+The \textsc{Split} rules divides the solution space into two disjoint subspaces.
+The theory lemmas (\textsc{ThLem}) are the leaves of the proof.
+They occurs when the solver managed to prove the absence of solution in a given subspace.
+The interval constraints propagation algorithms works on one constraint at the time. 
+The \textsc{Weakening} rules extract those conjunct out of the main formula.
+
+Each step of the proof has a set of variables $\vec x$ with a domain $\vec D$ and $F$ is a formula.
+We use of vectors in the formulas, writing $\vec x ∈ \vec D$ to denote $\bigwedge_i x_i ∈ D_i$.
+The domains are intervals, i.e., each $D_i$ has the form $[l_i,u_i]$ where $l_i$,$u_i$ are the lower and upper bounds for $x_i$.
+Since we are looking at unsatisfiability proofs, each node implies $⊥$.
+
+The root of the proof is has formula $A ∧ B$ and $D$ covers the entire domain,
+the inner nodes are \textsc{Split}s,
+and the proof's leaves are theory lemmas directly followed by a weakening.
+
+\begin{mathpar}
+\inferrule{ {} }{
+  \vec x ∈ \vec D ∧ f → ⊥
+}{\textsc{ThLem}}
+
+\inferrule{
+  D_i = [l;u] \\
+  l < p < u \\\\
+  x_i ∈ [l;p] ∧ \bigwedge_{j ≠ i} x_j ∈ D_j ∧ F → ⊥ \\
+  x_i ∈ [p;u] ∧ \bigwedge_{j ≠ i} x_j ∈ D_j ∧ F → ⊥
+}{
+  \vec x∈\vec D ∧ F → ⊥
+}{\textsc{Split}}
+
+\inferrule{
+  F = f ∧ \bigwedge_k F_k \\
+  \vec x ∈ \vec D ∧ f → ⊥
+}{
+  \vec x ∈ \vec D ∧ F → ⊥
+}{\textsc{Weakening}}
+\end{mathpar}
+TODO can we avoid weakening/strengthening ?
 
 \section{Interpolants in Nonlinear Theories}
 
@@ -46,9 +104,54 @@ Introduce various parameters/templates for the interpolants.
 	\item Degrees 
 \end{itemize}
 
+Is there something like δ-interpolants ?
+
+
 \section{Disjunctive Linear Interpolants}
 
 Algorithms for the generation from proof trees to disjunctions of linear constraints. 
+
+Let $l$ be a labelling function that maps formula and variables to \textsc{a},\textsc{b}, or \textsc{ab}.
+For each proof rule we associate an partial interpolant, written in square bracket on the right of the conclusion of the rules.
+
+% need a labelling function
+% ThLem: A → false 
+%        B → true
+% Split: A → I_1 ∨ I_2
+%       AB → ite(x_i ≤ p, I_1, I_2) 
+%        B → I_1 ∧ I_2
+% Weakening: identify
+
+\begin{mathpar}
+\inferrule{ {} }{
+  \vec x ∈ \vec D ∧ f → ⊥ \quad [l(f) ≠ \textsc{a}]
+}{\textsc{ThLemI}}
+
+\inferrule{
+  D_i = [l;u] \\
+  l < p < u \\\\
+  x_i ∈ [l;p] ∧ \bigwedge_{j ≠ i} x_j ∈ D_j ∧ F → ⊥ \quad [I_1] \\
+  x_i ∈ [p;u] ∧ \bigwedge_{j ≠ i} x_j ∈ D_j ∧ F → ⊥ \quad [I_2] \\
+}{
+  \vec x ∈ \vec D ∧ F → ⊥ \quad
+  \left[ \substack{ I_1 ∨ I_2     \qquad \quad ~~  \text{if} ~ l(x_i) = \textsc{a} \\
+                    ite(x_i ≤ p, I_1, I_2) ~~ \text{if} ~ l(x_i) = \textsc{ab}\\
+                    I_1 ∧ I_2     \qquad \quad ~~  \text{if} ~ l(x_i) = \textsc{b}}\right]
+}{\textsc{SplitI}}
+
+\inferrule{
+  F = f ∧ \bigwedge_k F_k \\
+  \vec x ∈ \vec D ∧ f → ⊥ \quad [I]
+}{
+  \vec x ∈ \vec D ∧ F → ⊥ \quad [I]
+}{\textsc{WeakeningI}}
+\end{mathpar}
+
+where $ite(x,y,z)$ is a shorthand for $(x ∧ y)∨(¬x ∧ z)$
+
+TODO find a better way to format that.
+
+TODO explain (and prove) that this is correct.
 
 \section{Smoothing}
 
