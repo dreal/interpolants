@@ -53,10 +53,16 @@ object Interpolate extends dzufferey.arg.Options {
       case other => sys.error("not expected: " + other)
     }
     val proofTrace = IO.readTextFile("output.proof")
-    val proof = ProofParser.parse(proofTrace)
+    val rawProof = ProofParser.parse(proofTrace)
     SysCmd(Array("rm", "output.proof"))
+    val bounds = f.freeVariables.foldLeft(Map[Variable,(Double,Double)]())( (acc,v) => acc + (v -> (lb,ub)) )
+    
+    println("proof:")
+    ProofStep.prettyPrint(rawProof)
 
-    ProofStep.prettyPrint(proof)
+    val proof = ProofStep.toSplit(ProofStep.removeBounds(bounds, rawProof))
+    //println("proof (split only):")
+    //ProofStep.prettyPrint(proof)
 
     //label clause by side
     val ca = FormulaUtils.getConjuncts(a0).map( _ -> Side.A )
