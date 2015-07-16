@@ -104,7 +104,14 @@ Introduce various parameters/templates for the interpolants.
 	\item Degrees 
 \end{itemize}
 
-Is there something like δ-interpolants ?
+\begin{remark}[δ-interpolants]
+The interpolation method that we propose uses a δ-decision procedure to build a craig interpolant.
+The properties of the interpolant means that $A ∧ ¬I$ and $B ∧ I$ are both unsatisfiable.
+However, they are not necessarily δ-unsatisfiable.
+
+To obtain an interpolant such that both $A ∧ ¬I$ and $B ∧ I$ are δ-unsatisfiable, we can weaken both $A$ and $B$ by a factor δ.
+However, $A$ and $B$ must be at least $3δ$-unsatisfiable to guarantee that the solver finds a proof of unsatisfiability.
+\end{remark}
 
 
 \section{Disjunctive Linear Interpolants}

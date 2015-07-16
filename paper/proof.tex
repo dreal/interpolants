@@ -32,9 +32,9 @@ else we have $l(f)=B$ and $I=\top$, so
 The trick is how to apply the induction hypothesis.
 We have to consider 3 cases:
 \begin{enumerate}
-\item $x ∈ f(A) ∧ x \notin fv(B)$ and $I = I₁ ∨ I₂$
-\item $x ∈ f(A) ∧ x ∈ fv(B)$ and $I = ite(x < p, I₁, I₂)$
-\item $x \notin f(A) ∧ x ∈ fv(B)$ and $I = I₁ ∧ I₂$
+\item $x ∈ fv(A) ∧ x \notin fv(B)$ and $I = I₁ ∨ I₂$
+\item $x ∈ fv(A) ∧ x ∈ fv(B)$ and $I = ite(x < p, I₁, I₂)$
+\item $x \notin fv(A) ∧ x ∈ fv(B)$ and $I = I₁ ∧ I₂$
 \end{enumerate}
 
 Let's divide the domain $D$ into $D_A$ and $D_B$ where each contains the range of the corresponding variables.
