@@ -44,8 +44,8 @@ Applications.
 Given $A$,$B$ such that $A ∧ B$ is unsatisfiable, an interpolant $I$ is a formula satisfying:
 \begin{itemize}
 \item $A ⇒ I$;
-\item $I ∧ B$ is unsatisfiable;
-\item $I$ contains only variables common to $A$ and $B$.
+\item $B ∧ I ⇒ ⊥$;
+\item $fv(I) ⊆ fv(A) ∩ fv(B)$ where $fv$ returns the free variables in a formula.
 \end{itemize}
 
 \paragraph{δ-satifiability}
@@ -78,10 +78,10 @@ and the proof's leaves are theory lemmas directly followed by a weakening.
 }{\textsc{ThLem}}
 
 \inferrule{
-  D_i = [l;u] \\
+  D_i = [l;u) \\
   l < p < u \\\\
-  x_i ∈ [l;p] ∧ \bigwedge_{j ≠ i} x_j ∈ D_j ∧ F → ⊥ \\
-  x_i ∈ [p;u] ∧ \bigwedge_{j ≠ i} x_j ∈ D_j ∧ F → ⊥
+  x_i ∈ [l;p) ∧ \bigwedge_{j ≠ i} x_j ∈ D_j ∧ F → ⊥ \\
+  x_i ∈ [p;u) ∧ \bigwedge_{j ≠ i} x_j ∈ D_j ∧ F → ⊥
 }{
   \vec x∈\vec D ∧ F → ⊥
 }{\textsc{Split}}
@@ -117,9 +117,9 @@ For each proof rule we associate an partial interpolant, written in square brack
 % need a labelling function
 % ThLem: A → false 
 %        B → true
-% Split: A → I_1 ∨ I_2
-%       AB → ite(x_i ≤ p, I_1, I_2) 
-%        B → I_1 ∧ I_2
+% Split: A → I₁ ∨ I₂
+%       AB → ite(x_i ≤ p, I₁, I₂) 
+%        B → I₁ ∧ I₂
 % Weakening: identify
 
 \begin{mathpar}
@@ -128,15 +128,15 @@ For each proof rule we associate an partial interpolant, written in square brack
 }{\textsc{ThLemI}}
 
 \inferrule{
-  D_i = [l;u] \\
+  D_i = [l;u) \\
   l < p < u \\\\
-  x_i ∈ [l;p] ∧ \bigwedge_{j ≠ i} x_j ∈ D_j ∧ F → ⊥ \quad [I_1] \\
-  x_i ∈ [p;u] ∧ \bigwedge_{j ≠ i} x_j ∈ D_j ∧ F → ⊥ \quad [I_2] \\
+  x_i ∈ [l;p) ∧ \bigwedge_{j ≠ i} x_j ∈ D_j ∧ F → ⊥ \quad [I₁] \\
+  x_i ∈ [p;u) ∧ \bigwedge_{j ≠ i} x_j ∈ D_j ∧ F → ⊥ \quad [I₂] \\
 }{
   \vec x ∈ \vec D ∧ F → ⊥ \quad
-  \left[ \substack{ I_1 ∨ I_2     \qquad \quad ~~  \text{if} ~ l(x_i) = \textsc{a} \\
-                    ite(x_i ≤ p, I_1, I_2) ~~ \text{if} ~ l(x_i) = \textsc{ab}\\
-                    I_1 ∧ I_2     \qquad \quad ~~  \text{if} ~ l(x_i) = \textsc{b}}\right]
+  \left[ \substack{ I₁ ∨ I₂     \qquad \quad ~~  \text{if} ~ l(x_i) = \textsc{a} \\
+                    ite(x_i < p, I₁, I₂) ~~ \text{if} ~ l(x_i) = \textsc{ab}\\
+                    I₁ ∧ I₂     \qquad \quad ~~  \text{if} ~ l(x_i) = \textsc{b}}\right]
 }{\textsc{SplitI}}
 
 \inferrule{
@@ -161,6 +161,8 @@ Algorithms for smoothing DL-interpolants to user specified classes of nonlinear 
 \section{Examples and Experiments}
 
 
+\appendix
+\input{proof}
 
 
 \end{document}

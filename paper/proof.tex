@@ -1,0 +1,100 @@
+\section{Proofs}
+
+TODO better formating ...
+
+Correctness of the interpolation rules:
+
+Proof by induction.
+
+\paragraph{Base case: \textsc{ThLemI} rule}
+if $l(f)=A$ and $I=⊥$ then
+\begin{itemize}
+\item $A ⇒ I$: if $l(f)=A$ the theroy lemma means that $A⇔⊥$, thus, $⊥⇒⊥$
+\item $B ∧ I ⇒ ⊥$: trivially $⊥⇒⊥$
+\item $fv(I) ⊆ fv(A) ∩ fv(B)$: trivial
+\end{itemize}
+
+else we have $l(f)=B$ and $I=\top$, so
+\begin{itemize}
+\item $A ⇒ I$: trivially $\top ⇒ \top$
+\item $B ∧ I ⇒ ⊥$:  if $l(f)=B$ the theroy lemma means that $A⇔⊥$, thus, $⊥⇒⊥$
+\item $fv(I) ⊆ fv(A) ∩ fv(B)$: trivial
+\end{itemize}
+
+\paragraph{Induction step 1: \textsc{WeakeningI} rule}
+\begin{itemize}
+\item $A ⇒ I$: by induction hypothesis
+\item $B ∧ I ⇒ ⊥$: by induction hypothesis
+\item $fv(I) ⊆ fv(A) ∩ fv(B)$: by induction hypothesis
+\end{itemize}
+
+\paragraph{Induction step 2: \textsc{SplitI} rule}
+The trick is how to apply the induction hypothesis.
+We have to consider 3 cases:
+\begin{enumerate}
+\item $x ∈ f(A) ∧ x \notin fv(B)$ and $I = I₁ ∨ I₂$
+\item $x ∈ f(A) ∧ x ∈ fv(B)$ and $I = ite(x < p, I₁, I₂)$
+\item $x \notin f(A) ∧ x ∈ fv(B)$ and $I = I₁ ∧ I₂$
+\end{enumerate}
+
+Let's divide the domain $D$ into $D_A$ and $D_B$ where each contains the range of the corresponding variables.
+Variables that are in both side have their domain in both $D_A$ and $D_B$. 
+if $x\in fv(A)$ then the induction step has $D_{A1} = D_A ∧ x < p$ and $D_{A2} = D_A ∧ x ≥ p$ and $D_B$ is unchanged.
+
+In the first case, the induction hypothesis is
+\begin{eqnarray*}
+& A ∧ x_i < p ⇒ I₁ \\
+& A ∧ x_i ≥ p ⇒ I₂ \\
+& B ∧ I₁ ⇒ ⊥ \\
+& B ∧ I₂ ⇒ ⊥
+\end{eqnarray*}
+which simplifies to:
+\begin{eqnarray*}
+& A ⇒ I₁ ∨ I₂ \\
+& B ∧ (I₁ ∨ I₂) ⇒ ⊥
+\end{eqnarray*}
+
+In the second case, the induction hypothesis is
+\begin{eqnarray*}
+& A ∧ x_i < p ⇒ I₁ \\
+& A ∧ x_i ≥ p ⇒ I₂ \\
+& B ∧ x_i < p ∧ I₁ ⇒ ⊥ \\
+& B ∧ x_i ≥ p ∧ I₂ ⇒ ⊥
+\end{eqnarray*}
+
+The first two equations gives
+\[
+    ¬ A ∨ (¬(x < p) ∨ I₁) ∧ (¬(x ≥ p) ∨ I₂)
+\]
+which is the same as $¬ A ∨ ite(x < p, I₁, I₂)$
+and, therefore, $A ⇒ ite(x < p, I₁, I₂)$.
+
+The last two equations gives
+\[
+    ¬ B ∨ ((¬(x < p) ∨ ¬ I₁) ∧ (¬(x ≥ p) ∨ ¬ I₂))
+\]
+using distributivity law we get
+\[
+    ¬ B ∨ (x ≥ p ∧ ¬ I₂) ∨ (x < p ∧ ¬ I₁) ∨ (¬ I₁ ∧ ¬ I₂)
+\]
+because $(¬ I₁ ∧ ¬ I₂) ⇒  (x ≥ p ∧ ¬ I₂) ∨ (x < p ∧ ¬ I₁)$
+this simplifies to
+\[
+ ¬ B ∨ (x ≥ p ∧ ¬ I₂) ∨ (x < p ∧ ¬ I₁)
+\]
+which is the same as: $¬ B ∨ ¬ ite(x < p, I₁, I₂)$
+and, therefore, $B ∧ ite(x < p, I₁, I₂) ⇒ ⊥$.
+
+In the third case: the induction hypothesis is
+\begin{eqnarray*}
+& A ⇒ I₁ \\
+& A ⇒ I₂ \\
+& B ∧ x_i < p ∧ I₁ ⇒ ⊥ \\
+& B ∧ x_i ≥ p ∧ I₂ ⇒ ⊥
+\end{eqnarray*}
+which simplifies to:
+\begin{eqnarray*}
+& A ⇒ I₁ ∧ I₂ \\
+& B ∧ (I₁ ∧ I₂) ⇒ ⊥
+\end{eqnarray*}
+
