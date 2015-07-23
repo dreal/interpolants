@@ -111,12 +111,14 @@ boundAngle(a) := [a >= - 3.15, a <= 3.15] $
 /* [wxMaxima: comment start ]
 macros to generate constraints
 -connect(frame0, offset0, frame1, offset1): make two frame agree on the same point (3-dof rotation)
--align(frame0, direction0, frame1, direction1): allign two unit vectors in different frames (3-dof translation)
+-orient(frame0, orientation0, frame1, orientation1): match two rotations in different frames (3-dof translation)
+-align(frame0, direction0, frame1, direction1): align two unit vectors in different frames (3-dof translation, 1-dof rotation normal to the direction)
    [wxMaxima: comment end   ] */
 
 /* [wxMaxima: input   start ] */
 connect(f0, o0, f1, o1) := vecEq(vecFromFrame(f0, o0), vecFromFrame(f1, o1)) $
-align(f0, d0, f1, d1) := quatEq(quatFromFrame(f0, d0), quatFromFrame(f1, d1)) $
+orient(f0, d0, f1, d1) := quatEq(quatFromFrame(f0, d0), quatFromFrame(f1, d1)) $
+align(f0, d0, f1, d1) := vecEq(rotate(d0, f0@q), rotate(d1, f1@q)) $
 /* [wxMaxima: input   end   ] */
 
 /* [wxMaxima: comment start ]
@@ -125,7 +127,7 @@ j0,1 are [frame, offset, rotation]
    [wxMaxima: comment end   ] */
 
 /* [wxMaxima: input   start ] */
-fixed(j0, j1) := append(connect(j0[1], j0[2], j1[1], j1[2]), align(j0[1], j0[3], j1[1], j1[3])) $
+fixed(j0, j1) := append(connect(j0[1], j0[2], j1[1], j1[2]), orient(j0[1], j0[3], j1[1], j1[3])) $
 /* [wxMaxima: input   end   ] */
 
 /* [wxMaxima: comment start ]
@@ -134,12 +136,30 @@ j0,1 are [frame, offset, direction]
    [wxMaxima: comment end   ] */
 
 /* [wxMaxima: input   start ] */
-revolute(j0, j1) := append(connect(j0[1], j0[2], j1[1], j1[2]), connect(j0[1], j0[3], j1[1], j1[3])) $
+revolute(j0, j1) := append(connect(j0[1], j0[2], j1[1], j1[2]), align(j0[1], j0[3], j1[1], j1[3])) $
 /* [wxMaxima: input   end   ] */
 
 /* [wxMaxima: subsect start ]
-pretty printing
+preprocessing and pretty printing
    [wxMaxima: subsect end   ] */
+
+/* [wxMaxima: comment start ]
+preprocess(f,[[v1,cst1], ...]);
+  replace occurances of v1 in f by cst1*v1
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: input   start ] */
+varp(v) := atom(v) and not constantp(v) $
+matchdeclare([patI1, patI2], constantp, patV, varp) $
+defrule(bound1, patI1 * patV >= patI2, patV >= float(patI2/patI1)) $
+defrule(bound2, patI1 * patV <= patI2, patV <= float(patI2/patI1)) $
+defrule(bound3, patI1 * patV > patI2, patV > float(patI2/patI1)) $
+defrule(bound4, patI1 * patV < patI2, patV < float(patI2/patI1)) $
+simpBnd(f) := apply1(f, bound1, bound2, bound3, bound4) $
+scale0(f, var, factor) := float(fullratsimp(simpBnd(subst(factor*var, var, f)))) $
+scale(f, scaling) := lreduce(lambda([f,vs], scale0(f, vs[1], vs[2])), scaling, f) $
+preprocess(f, scaling) := scale(f, scaling) $
+/* [wxMaxima: input   end   ] */
 
 /* [wxMaxima: comment start ]
 this prints the new lines correctly in the console
@@ -244,10 +264,10 @@ model1(lb, ub) := append(
     boundAngle(\alpha),
     boundAngle(\beta),
     boundAngle(\gamma),
-    fixed([ground, zero, servo0],   [base, zero, [1,0,0,0]]),
-    fixed([base, zero, servo1],   [upper, zero, [1,0,0,0]]),
-    fixed([upper, arm_a, servo2], [lower, zero, [1,0,0,0]]),
-    fixed([lower, arm_b, [1,0,0,0]], [effector, zero, [1,0,0,0]])
+    fixed([ground, zero,  servo0],    [base,     zero, [1,0,0,0]]),
+    fixed([base,   zero,  servo1],    [upper,    zero, [1,0,0,0]]),
+    fixed([upper,  arm_a, servo2],    [lower,    zero, [1,0,0,0]]),
+    fixed([lower,  arm_b, [1,0,0,0]], [effector, zero, [1,0,0,0]])
 );
 /* [wxMaxima: input   end   ] */
 
@@ -282,11 +302,11 @@ model2(lb, ub) := append(
     boundAngle(\beta),
     boundAngle(\gamma),
     fixed([ground, zero, servo0], [base, zero, [1,0,0,0]]),
-    fixed([base, zero, servo1],   [upper, zero, [1,0,0,0]]),
-    fixed([base, zero, servo2],   [connector, zero, [1,0,0,0]]),
-    revolute([connector, servo2arma, [0,1,0]], [upperC, zero, [0,1,0]]),
-    revolute([upper, arm_a, [0,1,0]], [lower, zero, [0,1,0]]),
-    revolute([upperC, arm_a, [0,1,0]], [lower, servo2arma, [0,1,0]]),
+    fixed([base,   zero, servo1], [upper, zero, [1,0,0,0]]),
+    fixed([base,   zero, servo2], [connector, zero, [1,0,0,0]]),
+    revolute([connector, servo2arma, [0,1,0]], [upperC, zero,       [0,1,0]]),
+    revolute([upper,     arm_a,      [0,1,0]], [lower,  zero,       [0,1,0]]),
+    revolute([upperC,    arm_a,      [0,1,0]], [lower,  servo2arma, [0,1,0]]),
     fixed([lower, arm_b, [1,0,0,0]], [effector, zero, [1,0,0,0]])
 );
 /* [wxMaxima: input   end   ] */
@@ -303,7 +323,7 @@ new structural elements:
    [wxMaxima: comment end   ] */
 
 /* [wxMaxima: input   start ] */
-balance: new (frame ([bx, by, bz], [ba, bi, bj, bk]));
+balance: new (frame ([blx, bly, blz], [bla, bli, blj, bk]));
 upperB: new (frame ([ubx, uby, ubz], [uba, ubi, ubj, ubk]));
 lowerB: new (frame ([lbx, lby, lbz], [lba, lbi, lbj, lbk]));
 offset1: [-50,0,50];
@@ -448,39 +468,46 @@ dReal queries
    [wxMaxima: section end   ] */
 
 /* [wxMaxima: input   start ] */
-s: openw("model0.smt2");
-printf(s, dRealQuery(model0(-200, 200)));
-close(s);
+printIn(file, eqs) := block([s: openw(file),
+                             q: dRealQuery(eqs)],
+                            [printf(s, q), close(s)]) $
+coeffList(expr, coeff) := map(lambda([x], [x,coeff]), listofvars(expr)) $
 /* [wxMaxima: input   end   ] */
 
 /* [wxMaxima: input   start ] */
-s: openw("model1.smt2");
-printf(s, dRealQuery(model1(-500, 500)));
-close(s);
+sc0(coeff) := coeffList([bx,by,bz,ux,uy,uz,x,y,z], coeff) $
+eqs: preprocess(model0(-200, 200), sc0(1000)) $
+printIn("model0.smt2", eqs);
 /* [wxMaxima: input   end   ] */
 
 /* [wxMaxima: input   start ] */
-s: openw("model2.smt2");
-printf(s, dRealQuery(model2(-500, 500)));
-close(s);
+sc1(coeff) := coeffList([bx,by,bz,ux,uy,uz,lx,ly,lz,x,y,z], coeff) $
+eqs: preprocess(model1(-500, 500), sc1(1000)) $
+printIn("model1.smt2", eqs);
 /* [wxMaxima: input   end   ] */
 
 /* [wxMaxima: input   start ] */
-s: openw("model3.smt2");
-printf(s, dRealQuery(model3(-500, 500)));
-close(s);
+sc2(coeff) := coeffList([bx,by,bz,ux,uy,uz,lx,ly,lz,x,y,z,cx,cy,cz,ucx,ucy,ucz], coeff) $
+eqs: preprocess(model2(-500, 500), sc2(1000)) $
+printIn("model2.smt2", eqs);
 /* [wxMaxima: input   end   ] */
 
 /* [wxMaxima: input   start ] */
-s: openw("model4.smt2");
-printf(s, dRealQuery(model4(-1000, 1000)));
-close(s);
+sc3(coeff) := coeffList([bx,by,bz,ux,uy,uz,lx,ly,lz,x,y,z,cx,cy,cz,ucx,ucy,ucz,blx,bly,blz,ubx,uby,ubz,lbx,lby,lbz], coeff) $
+eqs: preprocess(model3(-500, 500), sc3(1000)) $
+printIn("model3.smt2", eqs);
 /* [wxMaxima: input   end   ] */
 
 /* [wxMaxima: input   start ] */
-s: openw("model5.smt2");
-printf(s, dRealQuery(model5(-350, 350)));
-close(s);
+sc4(coeff) := coeffList([bx,by,bz,sx,sy,sz,legs],coeff)$
+eqs: preprocess(model4(-1000, 1000), sc4(4000)) $
+printIn("model4.smt2", eqs);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+sc5(coeff) := coeffList([x,y,z,s0x,s0y,s0z,s1x,s1y,s1z,s2x,s2y,s2z], coeff) $
+eqs: preprocess(model5(-1000, 1000), sc5(1000)) $
+printIn("model5.smt2", eqs);
 /* [wxMaxima: input   end   ] */
 
 /* Maxima can't load/batch files which end with a comment! */

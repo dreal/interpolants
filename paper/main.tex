@@ -74,23 +74,23 @@ and the proof's leaves are theory lemmas directly followed by a weakening.
 
 \begin{mathpar}
 \inferrule{ {} }{
-  \vec x ∈ \vec D ∧ f → ⊥
+  \vec x ∈ \vec D ∧ f ⇒ ⊥
 }{\textsc{ThLem}}
 
 \inferrule{
   D_i = [l;u) \\
   l < p < u \\\\
-  x_i ∈ [l;p) ∧ \bigwedge_{j ≠ i} x_j ∈ D_j ∧ F → ⊥ \\
-  x_i ∈ [p;u) ∧ \bigwedge_{j ≠ i} x_j ∈ D_j ∧ F → ⊥
+  x_i ∈ [l;p) ∧ \bigwedge_{j ≠ i} x_j ∈ D_j ∧ F ⇒ ⊥ \\
+  x_i ∈ [p;u) ∧ \bigwedge_{j ≠ i} x_j ∈ D_j ∧ F ⇒ ⊥
 }{
-  \vec x∈\vec D ∧ F → ⊥
+  \vec x∈\vec D ∧ F ⇒ ⊥
 }{\textsc{Split}}
 
 \inferrule{
   F = f ∧ \bigwedge_k F_k \\
-  \vec x ∈ \vec D ∧ f → ⊥
+  \vec x ∈ \vec D ∧ f ⇒ ⊥
 }{
-  \vec x ∈ \vec D ∧ F → ⊥
+  \vec x ∈ \vec D ∧ F ⇒ ⊥
 }{\textsc{Weakening}}
 \end{mathpar}
 TODO can we avoid weakening/strengthening ?
@@ -131,16 +131,16 @@ For each proof rule we associate an partial interpolant, written in square brack
 
 \begin{mathpar}
 \inferrule{ {} }{
-  \vec x ∈ \vec D ∧ f → ⊥ \quad [l(f) ≠ \textsc{a}]
+  \vec x ∈ \vec D ∧ f ⇒ ⊥ \quad [l(f) ≠ \textsc{a}]
 }{\textsc{ThLemI}}
 
 \inferrule{
   D_i = [l;u) \\
   l < p < u \\\\
-  x_i ∈ [l;p) ∧ \bigwedge_{j ≠ i} x_j ∈ D_j ∧ F → ⊥ \quad [I₁] \\
-  x_i ∈ [p;u) ∧ \bigwedge_{j ≠ i} x_j ∈ D_j ∧ F → ⊥ \quad [I₂] \\
+  x_i ∈ [l;p) ∧ \bigwedge_{j ≠ i} x_j ∈ D_j ∧ F ⇒ ⊥ \quad [I₁] \\
+  x_i ∈ [p;u) ∧ \bigwedge_{j ≠ i} x_j ∈ D_j ∧ F ⇒ ⊥ \quad [I₂] 
 }{
-  \vec x ∈ \vec D ∧ F → ⊥ \quad
+  \vec x ∈ \vec D ∧ F ⇒ ⊥ \quad
   \left[ \substack{ I₁ ∨ I₂     \qquad \quad ~~  \text{if} ~ l(x_i) = \textsc{a} \\
                     ite(x_i < p, I₁, I₂) ~~ \text{if} ~ l(x_i) = \textsc{ab}\\
                     I₁ ∧ I₂     \qquad \quad ~~  \text{if} ~ l(x_i) = \textsc{b}}\right]
@@ -148,9 +148,9 @@ For each proof rule we associate an partial interpolant, written in square brack
 
 \inferrule{
   F = f ∧ \bigwedge_k F_k \\
-  \vec x ∈ \vec D ∧ f → ⊥ \quad [I]
+  \vec x ∈ \vec D ∧ f ⇒ ⊥ \quad [I]
 }{
-  \vec x ∈ \vec D ∧ F → ⊥ \quad [I]
+  \vec x ∈ \vec D ∧ F ⇒ ⊥ \quad [I]
 }{\textsc{WeakeningI}}
 \end{mathpar}
 
@@ -158,7 +158,7 @@ where $ite(x,y,z)$ is a shorthand for $(x ∧ y)∨(¬x ∧ z)$
 
 TODO find a better way to format that.
 
-TODO explain (and prove) that this is correct.
+TODO explain why it is correct.
 
 \section{Smoothing}
 
