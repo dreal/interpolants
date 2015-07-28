@@ -158,7 +158,23 @@ where $ite(x,y,z)$ is a shorthand for $(x ∧ y)∨(¬x ∧ z)$
 
 TODO find a better way to format that.
 
-TODO explain why it is correct.
+Intuitively, a proof of unsatisfiability is a tiling of the solution space where each tile is associated with a conjunct $f$ from $A ∧ B$.
+$f$ is a witness that shows the absence of solution in a given tile.
+The interpolation rules traverse the rules and selects which tiles belong to the interpolant $I$.
+
+At the leaf level (rule \textsc{ThLemI}), the tile is in $I$ if $f$ is not part of $A$, i.e., the contradiction originates from $B$.
+If $f$ is in both $A$ and $B$ then it can be consideres as either part of $A$ or $B$.
+Both cases leads to a correct interpolant.
+The \textsc{WeakeningI} rule does not influence the interpolant, it is only required to pick $f$ from $A ∧ B$.
+
+The \textsc{SplitI} is the most interesting rule.
+Splitting the domains essentially defined the bounds of the subsequent tiles.
+Let $x$ be the variable whose domain is split at value $p$ and $I₁$, $I₂$ be the two interpolants for the case when $x < p$ and $x ≥ p$.
+If $x$ occurs in $A$ but not $B$, then $x$ cannot occur in $I$.
+Since $x$ is in $A$ then we know that $A$ implies $x < p ⇒ I₁$ and $x ≥ p ⇒ I₂$.
+Eliminating $x$ give $I = I₁ ∨ I₂$.
+A similar reasoning is applicable when $x$ occurs in $B$ but not $A$ and gives $I = I₁ ∧ I₂$.
+When $x$ occurs in both $A$ and $B$ then $x$ is kept in $I$ and acts as a selector for the values of $x$ smaller than $p$ $I₁$ is selected, otherwise $I₂$ applies.
 
 \section{Smoothing}
 
