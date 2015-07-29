@@ -181,6 +181,17 @@ dRealQuery(t) := block([ d0: declareVars(t),
                        concatLines([dRealHeader, d0, d1, dRealFooter]));
 /* [wxMaxima: input   end   ] */
 
+/* [wxMaxima: comment start ]
+printing in a file and coeffs for a list of variables, variables in an expression
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: input   start ] */
+printIn(file, eqs) := block([s: openw(file),
+                             q: dRealQuery(eqs)],
+                            [printf(s, q), close(s)]) $
+coeffList(expr, coeff) := map(lambda([x], [x,coeff]), listofvars(expr)) $
+/* [wxMaxima: input   end   ] */
+
 /* [wxMaxima: section start ]
 equations for simple robotic arms
    [wxMaxima: section end   ] */
@@ -251,6 +262,16 @@ model0(lb, ub) := append(
 );
 /* [wxMaxima: input   end   ] */
 
+/* [wxMaxima: comment start ]
+dReal query
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: input   start ] */
+sc0(coeff) := coeffList([bx,by,bz,ux,uy,uz,x,y,z], coeff) $
+eqs: preprocess(model0(-200, 200), sc0(1000)) $
+printIn("model0.smt2", eqs);
+/* [wxMaxima: input   end   ] */
+
 /* [wxMaxima: subsect start ]
 model without connector (servo on joint between the 2 arms)
    [wxMaxima: subsect end   ] */
@@ -269,6 +290,16 @@ model1(lb, ub) := append(
     fixed([upper,  arm_a, servo2],    [lower,    zero, [1,0,0,0]]),
     fixed([lower,  arm_b, [1,0,0,0]], [effector, zero, [1,0,0,0]])
 );
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: comment start ]
+dReal query
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: input   start ] */
+sc1(coeff) := coeffList([bx,by,bz,ux,uy,uz,lx,ly,lz,x,y,z], coeff) $
+eqs: preprocess(model1(-500, 500), sc1(1000)) $
+printIn("model1.smt2", eqs);
 /* [wxMaxima: input   end   ] */
 
 /* [wxMaxima: subsect start ]
@@ -309,6 +340,43 @@ model2(lb, ub) := append(
     revolute([upperC,    arm_a,      [0,1,0]], [lower,  servo2arma, [0,1,0]]),
     fixed([lower, arm_b, [1,0,0,0]], [effector, zero, [1,0,0,0]])
 );
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: comment start ]
+dReal query
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: input   start ] */
+sc2(coeff) := coeffList([bx,by,bz,ux,uy,uz,lx,ly,lz,x,y,z,cx,cy,cz,ucx,ucy,ucz], coeff) $
+eqs: preprocess(model2(-500, 500), sc2(1000)) $
+printIn("model2.smt2", eqs);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: comment start ]
+a sighly simpler model to test the revolute joints:
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: input   start ] */
+model2a(lb, ub) := append(
+    boundFrame(upper, lb, ub),
+    boundFrame(lower, lb, ub),
+    boundFrame(effector, lb, ub),
+    boundFrame(upperC, lb, ub),
+    boundFrame(connector, lb, ub),
+    boundAngle(\alpha),
+    boundAngle(\beta),
+    fixed([ground, zero, servo1], [upper, zero, [1,0,0,0]]),
+    fixed([ground, zero, servo2], [connector, zero, [1,0,0,0]]),
+    revolute([connector, servo2arma, [0,1,0]], [upperC, zero,       [0,1,0]]),
+    revolute([upper,     arm_a,      [0,1,0]], [lower,  zero,       [0,1,0]]),
+    revolute([upperC,    arm_a,      [0,1,0]], [lower,  servo2arma, [0,1,0]]),
+    fixed([lower, arm_b, [1,0,0,0]], [effector, zero, [1,0,0,0]])
+);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+eqs: preprocess(model2a(-500, 500), sc2(1000)) $
+printIn("model2a.smt2", eqs);
 /* [wxMaxima: input   end   ] */
 
 /* [wxMaxima: subsect start ]
@@ -361,6 +429,16 @@ model3(lb, ub) := append(
     revolute([balance, offset2, [0,1,0]], [lowerB, zero, [0,1,0]]),
     revolute([lowerB, zero, [0,1,0]], [effector, offset2, [0,1,0]])
 );
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: comment start ]
+dReal query
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: input   start ] */
+sc3(coeff) := coeffList([bx,by,bz,ux,uy,uz,lx,ly,lz,x,y,z,cx,cy,cz,ucx,ucy,ucz,blx,bly,blz,ubx,uby,ubz,lbx,lby,lbz], coeff) $
+eqs: preprocess(model3(-500, 500), sc3(1000)) $
+printIn("model3.smt2", eqs);
 /* [wxMaxima: input   end   ] */
 
 /* [wxMaxima: section start ]
@@ -432,6 +510,16 @@ model4(lb, ub) := append(
 );
 /* [wxMaxima: input   end   ] */
 
+/* [wxMaxima: comment start ]
+dReal query
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: input   start ] */
+sc4(coeff) := coeffList([bx,by,bz,sx,sy,sz,legs],coeff)$
+eqs: preprocess(model4(-1000, 1000), sc4(4000)) $
+printIn("model4.smt2", eqs);
+/* [wxMaxima: input   end   ] */
+
 /* [wxMaxima: section start ]
 model for the foldable arm from Ankur et.al.
    [wxMaxima: section end   ] */
@@ -463,46 +551,9 @@ model5(lb, ub) := append(
 );
 /* [wxMaxima: input   end   ] */
 
-/* [wxMaxima: section start ]
-dReal queries
-   [wxMaxima: section end   ] */
-
-/* [wxMaxima: input   start ] */
-printIn(file, eqs) := block([s: openw(file),
-                             q: dRealQuery(eqs)],
-                            [printf(s, q), close(s)]) $
-coeffList(expr, coeff) := map(lambda([x], [x,coeff]), listofvars(expr)) $
-/* [wxMaxima: input   end   ] */
-
-/* [wxMaxima: input   start ] */
-sc0(coeff) := coeffList([bx,by,bz,ux,uy,uz,x,y,z], coeff) $
-eqs: preprocess(model0(-200, 200), sc0(1000)) $
-printIn("model0.smt2", eqs);
-/* [wxMaxima: input   end   ] */
-
-/* [wxMaxima: input   start ] */
-sc1(coeff) := coeffList([bx,by,bz,ux,uy,uz,lx,ly,lz,x,y,z], coeff) $
-eqs: preprocess(model1(-500, 500), sc1(1000)) $
-printIn("model1.smt2", eqs);
-/* [wxMaxima: input   end   ] */
-
-/* [wxMaxima: input   start ] */
-sc2(coeff) := coeffList([bx,by,bz,ux,uy,uz,lx,ly,lz,x,y,z,cx,cy,cz,ucx,ucy,ucz], coeff) $
-eqs: preprocess(model2(-500, 500), sc2(1000)) $
-printIn("model2.smt2", eqs);
-/* [wxMaxima: input   end   ] */
-
-/* [wxMaxima: input   start ] */
-sc3(coeff) := coeffList([bx,by,bz,ux,uy,uz,lx,ly,lz,x,y,z,cx,cy,cz,ucx,ucy,ucz,blx,bly,blz,ubx,uby,ubz,lbx,lby,lbz], coeff) $
-eqs: preprocess(model3(-500, 500), sc3(1000)) $
-printIn("model3.smt2", eqs);
-/* [wxMaxima: input   end   ] */
-
-/* [wxMaxima: input   start ] */
-sc4(coeff) := coeffList([bx,by,bz,sx,sy,sz,legs],coeff)$
-eqs: preprocess(model4(-1000, 1000), sc4(4000)) $
-printIn("model4.smt2", eqs);
-/* [wxMaxima: input   end   ] */
+/* [wxMaxima: comment start ]
+dReal query
+   [wxMaxima: comment end   ] */
 
 /* [wxMaxima: input   start ] */
 sc5(coeff) := coeffList([x,y,z,s0x,s0y,s0z,s1x,s1y,s1z,s2x,s2y,s2z], coeff) $
