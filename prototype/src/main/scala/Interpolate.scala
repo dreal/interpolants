@@ -92,8 +92,10 @@ object Interpolate extends dzufferey.arg.Options {
 
   var a: Option[Formula] = None
   var b: Option[Formula] = None
-  newOption("-a", dzufferey.arg.String( s => a = Some(parseFormula(s))), "")
-  newOption("-b", dzufferey.arg.String( s => b = Some(parseFormula(s))), "")
+  newOption("-a", dzufferey.arg.String( s => a = Some(parseFormula(s))), "formula A")
+  newOption("-b", dzufferey.arg.String( s => b = Some(parseFormula(s))), "formula B")
+  newOption("-fa", dzufferey.arg.String( s => a = Some(parseFormulaFromFile(s))), "file containing the formula A")
+  newOption("-fb", dzufferey.arg.String( s => b = Some(parseFormulaFromFile(s))), "file containing the formula B")
   
   var delta  = 0.1
   newOption("-d", dzufferey.arg.Real( r => delta = r), "delta")

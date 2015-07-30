@@ -21,6 +21,11 @@ object Utils {
       case other => sys.error("expected formula: " + other)
     }
   }
+  
+  def parseFormulaFromFile(s: String): Formula = {
+    val content = dzufferey.utils.IO.readTextFile(s)
+    parseFormula(content)
+  }
 
   def weaken(f: Formula, delta: Double): Formula = {
     val d = Literal(delta.abs)
