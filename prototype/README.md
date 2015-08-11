@@ -60,9 +60,11 @@ The default bounds are `-10` and `10`.
 
 * compute the interpolant incrementally (if we want to process large proofs)
 
-    - avoid conversion to Split
+    - event based parser for on-the-fly processing: scala combinator parsers are pretty damn slow...
 
-    - process the proof on the fly as much as possible, e.g, once a branch of a split is processed it can be thrown away
+    - simplification/merging of boxes (re-tiling)
+
+    - avoid conversion to Split
 
     - increase the stack space or use a dedicated stack to avoid overflow
 
