@@ -23,7 +23,6 @@ case class Contraction(f: Formula, after: Map[Variable, (Double, Double)], next:
       if (pub != ub) {
         acc ::= (id -> (ub, pub))
       }
-      acc
     }
     assert(!acc.isEmpty)
     acc

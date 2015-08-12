@@ -50,5 +50,10 @@ object Utils {
     }, f)
     FormulaUtils.nnf(FormulaUtils.normalize(f1))
   }
+  
+  def ite(a: Formula, b: Formula, c: Formula) = {
+    And(Or(Not(a), b), Or(a, c))
+  }
+
 
 }

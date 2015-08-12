@@ -8,19 +8,12 @@ import Side._
 class PiecewiseLinearInterpolant(proof: ProofStep, labels: Map[Formula, Side]) {
   
   val aFomula = labels.filter(_._2 == A).map(_._1)
-
   val bFomula = labels.filter(_._2 == B).map(_._1)
 
   val aVariables = aFomula.flatMap(_.freeVariables).toSet
-
   val bVariables = bFomula.flatMap(_.freeVariables).toSet
-
   val commonVariables = aVariables intersect bVariables
   
-  protected def ite(a: Formula, b: Formula, c: Formula) = {
-    And(Or(Not(a), b), Or(a, c))
-  }
-
   protected def extract(prf: ProofStep): Formula = prf match {
     case Conflict(f) =>
       labels.get(f) match {
@@ -42,6 +35,7 @@ class PiecewiseLinearInterpolant(proof: ProofStep, labels: Map[Formula, Side]) {
     FormulaUtils.simplifyBool(f2)
   }
 
+  //TODO factor in an other file, adapt to variable bounds
   def hyperCubes(lb: Double, ub: Double): Seq[Map[Variable,(Double,Double)]] = {
     def traverse(f: Formula, acc: Map[Variable,(Double,Double)]): Seq[Map[Variable,(Double,Double)]] = f match {
       case And(args @ _*) =>
