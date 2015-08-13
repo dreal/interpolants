@@ -35,8 +35,22 @@ class PiecewiseLinearInterpolant(proof: ProofStep, labels: Map[Formula, Side]) {
     FormulaUtils.simplifyBool(f2)
   }
 
-  //TODO factor in an other file, adapt to variable bounds
   def hyperCubes(lb: Double, ub: Double): Seq[Map[Variable,(Double,Double)]] = {
+    val init = commonVariables.map(v => v -> (lb, ub)).toMap
+    PiecewiseLinearInterpolant.hyperCubes(init, interpolant)
+  }
+  
+  def hyperCubes(domain: Map[Variable,(Double,Double)]): Seq[Map[Variable,(Double,Double)]] = {
+    val init = domain.filter(kv => commonVariables(kv._1))
+    PiecewiseLinearInterpolant.hyperCubes(init, interpolant)
+  }
+
+}
+
+object PiecewiseLinearInterpolant {
+
+  def hyperCubes(commonVariablesDomain: Map[Variable,(Double,Double)],
+                 interpolant: Formula): Seq[Map[Variable,(Double,Double)]] = {
     def traverse(f: Formula, acc: Map[Variable,(Double,Double)]): Seq[Map[Variable,(Double,Double)]] = f match {
       case And(args @ _*) =>
         args.foldLeft(Seq(acc))( (acc , a) => acc.flatMap( ac => traverse(a, ac)) )
@@ -61,8 +75,7 @@ class PiecewiseLinearInterpolant(proof: ProofStep, labels: Map[Formula, Side]) {
       case other =>
         sys.error("unexpected: " + other)
     }
-    val init = commonVariables.map(v => v -> (lb, ub)).toMap
-    val cubes = traverse(interpolant, init)
+    val cubes = traverse(interpolant, commonVariablesDomain)
     //filter the empty ones
     cubes.filter( c => c.forall{ case (_, (l, u)) => l < u} )
   }

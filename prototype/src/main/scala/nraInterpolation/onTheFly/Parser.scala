@@ -6,6 +6,7 @@ import dzufferey.utils.LogLevel._
 import scala.util.parsing.combinator.RegexParsers
 import java.io._
 import nraInterpolation.Utils._
+import nraInterpolation._
 
 import ProofEvent._
 
@@ -21,17 +22,15 @@ object Parser extends RegexParsers {
   def num: Parser[Double] = (
     number ^^ ( _.toDouble )
   | "-INFTY" ^^^ Double.NegativeInfinity
-  | "INFTY" ^^^ Double.PositiveInfinity
-  | "-inf" ^^^ Double.NegativeInfinity
-  | "inf" ^^^ Double.PositiveInfinity
+  | "INFTY"  ^^^ Double.PositiveInfinity
+  | "-inf"   ^^^ Double.NegativeInfinity
+  | "inf"    ^^^ Double.PositiveInfinity
   )
 
   def variable: Parser[Variable] = nonWhite ^^ ( id => Variable(id).setType(Real) )
 
   def range: Parser[(Variable, Double, Double)] = (
     variable ~ (":" ~> nonEq ~> "=" ~> "[" ~> num) ~ ("," ~> num <~ "]") ^^ { case id ~ lb ~ ub => (id, lb, ub) }
-  | variable <~ ":" <~ nonEq <~ "=" <~ "[ -INFTY ]" ^^ { case id => (id, Double.NegativeInfinity, Double.NegativeInfinity) }
-  | variable <~ ":" <~ nonEq <~ "=" <~ "[ INFTY ]" ^^ { case id => (id, Double.PositiveInfinity, Double.PositiveInfinity) }
   | variable <~ ":" <~ nonEq <~ "=" <~ "[ ENTIRE ]" ^^ { case id => (id, Double.NegativeInfinity, Double.PositiveInfinity) }
   )
 
@@ -52,15 +51,9 @@ object Parser extends RegexParsers {
     "[conflict detected] by" ~> formula ^^ ( Conflict(_) )
 
   def split: Parser[Split] =
-    "[branching] on" ~> formula ^^ { case Leq(v @ Variable(_), Literal(d: Double)) => Split(v, d, true)
-                                     case Leq(v @ Variable(_), Literal(d: Long)) => Split(v, d.toDouble, true)
-                                     case Geq(v @ Variable(_), Literal(d: Double)) => Split(v, d, false)
-                                     case Geq(v @ Variable(_), Literal(d: Long)) => Split(v, d.toDouble, false)
-                                     case Not(Lt(v @ Variable(_), Literal(d: Double))) => Split(v, d, false)
-                                     case Not(Lt(v @ Variable(_), Literal(d: Long))) => Split(v, d.toDouble, false)
-                                     case Not(Lt(Literal(d: Double), v @ Variable(_))) => Split(v, d, true)
-                                     case Not(Lt(Literal(d: Long), v @ Variable(_))) => Split(v, d.toDouble, true)
-                                     case other => sys.error("branching, found " + other.toStringFull) }
+    "[branching] on" ~> formula ^^ {  case UpperBound(v, d) => Split(v, d, true) 
+                                      case LowerBound(v, d) => Split(v, d, false) 
+                                      case other => sys.error("branching, found " + other.toStringFull) }
 
   def event: Parser[ProofEvent] = domain | split | contraction | conflict
 

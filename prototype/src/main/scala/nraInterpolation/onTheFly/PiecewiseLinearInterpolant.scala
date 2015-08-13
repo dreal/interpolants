@@ -17,8 +17,8 @@ class PiecewiseLinearInterpolant(labels: Map[Formula, Side]) {
   val commonVariables = aVariables intersect bVariables
   
   //the proof is of the form: domain (split | contract | conflict)*
-  //TODO optionally take the actual domain
-  def extractFromProof(reader: BufferedReader, actualDomain: Option[Values] = None): Formula = {
+  //optionally take the actual domain
+  def extractFromProof(reader: BufferedReader, actualDomain: Option[Values] = None): (Values, Formula) = {
     // stores the domains currently explored
     val domains = scala.collection.mutable.Stack[Values]()
     // the stack stores the branching points and partial interpolants
@@ -54,8 +54,8 @@ class PiecewiseLinearInterpolant(labels: Map[Formula, Side]) {
             //check that we don't have a smaller domain than actualDomain
             d.foreach{ case (v, (l1,u1)) =>
               val (l2, u2) = domain(v)
-              assert(l2 < l1)
-              assert(u1 < u2)
+              assert(l2 <= l1)
+              assert(u1 <= u2)
             }
           case None =>
             domains.push(domain)
@@ -103,7 +103,7 @@ class PiecewiseLinearInterpolant(labels: Map[Formula, Side]) {
     assert(i.isDefined)
     assert(stack.isEmpty)
     assert(domains.size == 1)
-    FormulaUtils.simplifyBool(FormulaUtils.nnf(FormulaUtils.normalize(i.get)))
+    (domains.pop, FormulaUtils.simplifyBool(FormulaUtils.nnf(FormulaUtils.normalize(i.get))))
   }
 
 }
