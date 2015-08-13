@@ -122,25 +122,18 @@ object Interpolate extends dzufferey.arg.Options {
     cubes.foreach( m => println(m.map{ case (v, (lb, ub)) => v + " ∈ [" + lb + ", " + ub +"]"}.mkString("  ", ", ","")))
   }
 
-  def getDomain: Map[Variable,(Double,Double)] = (lb,ub,domain) match {
-    case (Some(l), Some(u), None) =>
-      val vs = a.get.freeVariables ++ b.get.freeVariables
-      vs.foldLeft(Map.empty[Variable,(Double,Double)])( (acc, v) => acc + (v -> (l, u)) )
-    case (None, None, Some(f)) =>
-      val vs = a.get.freeVariables ++ b.get.freeVariables
-      val formula = parseFormulaFromFile(f)
-      val init = vs.map(v => v -> (Double.NegativeInfinity, Double.PositiveInfinity)).toMap
-      FormulaUtils.getConjuncts(formula).foldLeft(init)( (acc, f) => f match {
-        case LowerBound(v, b) =>
-          val (l, u) = acc(v)
-          acc + (v -> (math.max(l, b), u))
-        case UpperBound(v, b) =>
-          val (l, u) = acc(v)
-          acc + (v -> (l, math.min(u, b)))
-        case other =>
-          sys.error("not a bound: " + other)
-      })
-    case other => sys.error("wrong combination for bound: " + other)
+  def getDomain: Map[Variable,(Double,Double)] = {
+    val vs = a.get.freeVariables ++ b.get.freeVariables
+    (lb,ub,domain) match {
+      case (Some(l), Some(u), None) =>
+        vs.foldLeft(Map.empty[Variable,(Double,Double)])( (acc, v) => acc + (v -> (l, u)) )
+      case (None, None, Some(f)) =>
+        val b = parseBoundsFromFile(f)
+        vs.foldLeft(b)( (acc, v) => {
+          if (acc contains v) acc else acc + (v -> (Double.NegativeInfinity, Double.PositiveInfinity))
+        })
+      case other => sys.error("wrong combination for bound: " + other)
+    }
   }
 
   var solverCmd = "dReal"

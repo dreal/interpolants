@@ -1,0 +1,4 @@
+(and
+    (= x (sin t))
+    (= y (cos t))
+)

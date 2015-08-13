@@ -37,6 +37,22 @@ object Utils {
     parseFormula(content)
   }
 
+  def parseBoundsFromFile(s: String): Map[Variable, (Double,Double)] = {
+    val f = parseFormulaFromFile(s)
+    val vs = f.freeVariables
+    val init = vs.map(v => v -> (Double.NegativeInfinity, Double.PositiveInfinity)).toMap
+    FormulaUtils.getConjuncts(f).foldLeft(init)( (acc, f) => f match {
+      case LowerBound(v, b) =>
+        val (l, u) = acc(v)
+        acc + (v -> (math.max(l, b), u))
+      case UpperBound(v, b) =>
+        val (l, u) = acc(v)
+        acc + (v -> (l, math.min(u, b)))
+      case other =>
+        sys.error("not a bound: " + other)
+    })
+  }
+
   def weaken(f: Formula, delta: Double): Formula = {
     val d = Literal(delta.abs)
     val f1 = FormulaUtils.map({
