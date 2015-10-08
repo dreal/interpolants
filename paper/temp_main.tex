@@ -17,13 +17,13 @@
 
 \begin{document}
 
-\title{Interpolants in Nonlinear Theories over the Reals}
+\title{Interpolating Nonlinear Formulas over the Reals}
 \author{Damien Zufferey \and Sicun Gao}
 \institute{MIT}
 
 \maketitle
 \begin{abstract}
-We develop methods for obtaining interpolants for first-order formulas over the reals with a wide range of nonlinear functions. 
+We develop algorithms for computing Craig interpolants for first-order formulas over real numbers with a wide range of nonlinear functions, including transcendental functions and differential equations. We transform proof traces from delta-complete decision procedures into interpolants that consist of Boolean combinations of linear constraints. The algorithms are guaranteed to find the interpolants between two formulas $A$ and $B$ whenever $A\wedge B$ is not delta-satisfiable. At the same time, by exploiting delta-perturbations one can parameterize the algorithm to find interpolants with different positions between $A$ and $B$. We show applications of the methods in geometric theorom proving, robotic design, and hybrid system verification.  
 \end{abstract}
 
 \section{Introduction}
@@ -68,28 +68,35 @@ and the proof's leaves are theory lemmas directly followed by a weakening.
 
 \begin{mathpar}
 \inferrule{ {} }{
-  \vec x ∈ \vec D ∧ f ⇒ ⊥
+  \vec x ∈ \vec D ∧ c ⇒ ⊥
 }{\textsc{ThLem}}
 
 \inferrule{
   D_i = [l;u) \\
   l < p < u \\\\
-  x_i ∈ [l;p) ∧ \bigwedge_{j ≠ i} x_j ∈ D_j ∧ F ⇒ ⊥ \\
-  x_i ∈ [p;u) ∧ \bigwedge_{j ≠ i} x_j ∈ D_j ∧ F ⇒ ⊥
+  x_i ∈ [l;p) ∧ \bigwedge_{j ≠ i} x_j ∈ D_j ∧ C ⇒ ⊥ \\
+  x_i ∈ [p;u) ∧ \bigwedge_{j ≠ i} x_j ∈ D_j ∧ C ⇒ ⊥
 }{
-  \vec x∈\vec D ∧ F ⇒ ⊥
+  \vec x∈\vec D ∧ C ⇒ ⊥
 }{\textsc{Split}}
 
 \inferrule{
-  F = f ∧ \bigwedge_k F_k \\
-  \vec x ∈ \vec D ∧ f ⇒ ⊥
+  C = c ∧ \bigwedge_i c_i \\
+  \vec x ∈ \vec D ∧ c ⇒ ⊥
 }{
-  \vec x ∈ \vec D ∧ F ⇒ ⊥
+  \vec x ∈ \vec D ∧ C ⇒ ⊥
 }{\textsc{Weakening}}
 \end{mathpar}
-\todo[inline]{can we avoid weakening/strengthening?}
 
-\section{Interpolants in Nonlinear Theories}
+\begin{example}
+
+\end{example}
+
+
+
+\section{Interpolants from Proofs}
+
+\subsection{Interpolant Generation}
 
 Introduce various parameters/templates for the interpolants. 
 \begin{itemize}
@@ -106,9 +113,6 @@ However, they are not necessarily δ-unsatisfiable.
 To obtain an interpolant such that both $A ∧ ¬I$ and $B ∧ I$ are δ-unsatisfiable, we can weaken both $A$ and $B$ by a factor δ.
 However, $A$ and $B$ must be at least $3δ$-unsatisfiable to guarantee that the solver finds a proof of unsatisfiability.
 \end{remark}
-
-
-\section{Disjunctive Linear Interpolants}
 
 Algorithms for the generation from proof trees to disjunctions of linear constraints. 
 
@@ -170,16 +174,30 @@ Eliminating $x$ give $I = I₁ ∨ I₂$.
 A similar reasoning is applicable when $x$ occurs in $B$ but not $A$ and gives $I = I₁ ∧ I₂$.
 When $x$ occurs in both $A$ and $B$ then $x$ is kept in $I$ and acts as a selector for the values of $x$ smaller than $p$ $I₁$ is selected, otherwise $I₂$ applies.
 
+\begin{theorem}
+The proof rules are correct. 
+\end{theorem}
+\input{proof}
 %\section{Smoothing}
 
 %Algorithms for smoothing DL-interpolants to user specified classes of nonlinear interpolants. 
 
 
+\subsection{Handling Differential Equations}
+
+\section{Parameterized Interpolant Generation}
+
+\subsection{Distances}
+
+\subsection{Nonlinear interpolants}
+
+Parameterization 
+
+
 \section{Examples and Experiments}
 
 
-\appendix
-\input{proof}
+%\appendix
 
 
 \end{document}
