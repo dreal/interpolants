@@ -18,164 +18,19 @@
 \begin{document}
 
 \title{Interpolants in Nonlinear Theories over the Reals}
-\author{Damien Zufferey \and Sicun Gao}
+\author{Sicun Gao \and Damien Zufferey}
 \institute{MIT}
 
 \maketitle
+
 \begin{abstract}
-We develop methods for obtaining interpolants for first-order formulas over the reals with a wide range of nonlinear functions. 
+\input{abstract}
 \end{abstract}
 
-\section{Introduction}
-
-Difficulty. 
-
-A concrete example of what we can compute. 
-
-Applications. 
-
-\section{Preliminaries}
-
-\paragraph{Craig interpolation}
-Given $A$,$B$ such that $A ∧ B$ is unsatisfiable, an interpolant $I$ is a formula satisfying:
-\begin{itemize}
-\item $A ⇒ I$;
-\item $B ∧ I ⇒ ⊥$;
-\item $fv(I) ⊆ fv(A) ∩ fv(B)$ where $fv$ returns the free variables in a formula.
-\end{itemize}
-
-\paragraph{Proofs from $\delta$-complete decision procedures.}
-
-The complete theory behind proof extraction from $\delta$-decision procedure is available in \cite{}.
-Here, we described a simplified version.
-The proof is divides the solution space until it can prove, using interval arithmetic, that each small piece of the solution space is empty.
-The solver uses constraints propagation and pruning steps to limit the amount of branching required.
-However, the proof it produces only need to consider two main rules: splitting and theory lemma.
-The \textsc{Split} rules divides the solution space into two disjoint subspaces.
-The theory lemmas (\textsc{ThLem}) are the leaves of the proof.
-They occurs when the solver managed to prove the absence of solution in a given subspace.
-The interval constraints propagation algorithms works on one constraint at the time. 
-The \textsc{Weakening} rules extract those conjunct out of the main formula.
-
-Each step of the proof has a set of variables $\vec x$ with a domain $\vec D$ and $F$ is a formula.
-We use of vectors in the formulas, writing $\vec x ∈ \vec D$ to denote $\bigwedge_i x_i ∈ D_i$.
-The domains are intervals, i.e., each $D_i$ has the form $[l_i,u_i]$ where $l_i$,$u_i$ are the lower and upper bounds for $x_i$.
-Since we are looking at unsatisfiability proofs, each node implies $⊥$.
-
-The root of the proof is has formula $A ∧ B$ and $D$ covers the entire domain,
-the inner nodes are \textsc{Split}s,
-and the proof's leaves are theory lemmas directly followed by a weakening.
-
-\begin{mathpar}
-\inferrule{ {} }{
-  \vec x ∈ \vec D ∧ f ⇒ ⊥
-}{\textsc{ThLem}}
-
-\inferrule{
-  D_i = [l;u) \\
-  l < p < u \\\\
-  x_i ∈ [l;p) ∧ \bigwedge_{j ≠ i} x_j ∈ D_j ∧ F ⇒ ⊥ \\
-  x_i ∈ [p;u) ∧ \bigwedge_{j ≠ i} x_j ∈ D_j ∧ F ⇒ ⊥
-}{
-  \vec x∈\vec D ∧ F ⇒ ⊥
-}{\textsc{Split}}
-
-\inferrule{
-  F = f ∧ \bigwedge_k F_k \\
-  \vec x ∈ \vec D ∧ f ⇒ ⊥
-}{
-  \vec x ∈ \vec D ∧ F ⇒ ⊥
-}{\textsc{Weakening}}
-\end{mathpar}
-\todo[inline]{can we avoid weakening/strengthening?}
-
-\section{Interpolants in Nonlinear Theories}
-
-Introduce various parameters/templates for the interpolants. 
-\begin{itemize}
-	\item Robustness
-	\item Boolean operations
-	\item Degrees 
-\end{itemize}
-
-\begin{remark}[δ-interpolants]
-The interpolation method that we propose uses a δ-decision procedure to build a craig interpolant.
-The properties of the interpolant means that $A ∧ ¬I$ and $B ∧ I$ are both unsatisfiable.
-However, they are not necessarily δ-unsatisfiable.
-
-To obtain an interpolant such that both $A ∧ ¬I$ and $B ∧ I$ are δ-unsatisfiable, we can weaken both $A$ and $B$ by a factor δ.
-However, $A$ and $B$ must be at least $3δ$-unsatisfiable to guarantee that the solver finds a proof of unsatisfiability.
-\end{remark}
-
-
-\section{Disjunctive Linear Interpolants}
-
-Algorithms for the generation from proof trees to disjunctions of linear constraints. 
-
-Let $l$ be a labelling function that maps formula and variables to \textsc{a},\textsc{b}, or \textsc{ab}.
-For each proof rule we associate an partial interpolant, written in square bracket on the right of the conclusion of the rules.
-
-% need a labelling function
-% ThLem: A → false 
-%        B → true
-% Split: A → I₁ ∨ I₂
-%       AB → ite(x_i ≤ p, I₁, I₂) 
-%        B → I₁ ∧ I₂
-% Weakening: identify
-
-\begin{mathpar}
-\inferrule{ {} }{
-  \vec x ∈ \vec D ∧ f ⇒ ⊥ \quad [l(f) ≠ \textsc{a}]
-}{\textsc{ThLemI}}
-
-\inferrule{
-  D_i = [l;u) \\
-  l < p < u \\\\
-  x_i ∈ [l;p) ∧ \bigwedge_{j ≠ i} x_j ∈ D_j ∧ F ⇒ ⊥ \quad [I₁] \\
-  x_i ∈ [p;u) ∧ \bigwedge_{j ≠ i} x_j ∈ D_j ∧ F ⇒ ⊥ \quad [I₂] 
-}{
-  \vec x ∈ \vec D ∧ F ⇒ ⊥ \quad
-  \left[ \substack{ I₁ ∨ I₂     \qquad \quad ~~  \text{if} ~ l(x_i) = \textsc{a} \\
-                    ite(x_i < p, I₁, I₂) ~~ \text{if} ~ l(x_i) = \textsc{ab}\\
-                    I₁ ∧ I₂     \qquad \quad ~~  \text{if} ~ l(x_i) = \textsc{b}}\right]
-}{\textsc{SplitI}}
-
-\inferrule{
-  F = f ∧ \bigwedge_k F_k \\
-  \vec x ∈ \vec D ∧ f ⇒ ⊥ \quad [I]
-}{
-  \vec x ∈ \vec D ∧ F ⇒ ⊥ \quad [I]
-}{\textsc{WeakeningI}}
-\end{mathpar}
-
-where $ite(x,y,z)$ is a shorthand for $(x ∧ y)∨(¬x ∧ z)$
-
-\todo[inline]{find a better way to format that.}
-
-Intuitively, a proof of unsatisfiability is a tiling of the solution space where each tile is associated with a conjunct $f$ from $A ∧ B$.
-$f$ is a witness that shows the absence of solution in a given tile.
-The interpolation rules traverse the rules and selects which tiles belong to the interpolant $I$.
-
-At the leaf level (rule \textsc{ThLemI}), the tile is in $I$ if $f$ is not part of $A$, i.e., the contradiction originates from $B$.
-If $f$ is in both $A$ and $B$ then it can be consideres as either part of $A$ or $B$.
-Both cases leads to a correct interpolant.
-The \textsc{WeakeningI} rule does not influence the interpolant, it is only required to pick $f$ from $A ∧ B$.
-
-The \textsc{SplitI} is the most interesting rule.
-Splitting the domains essentially defined the bounds of the subsequent tiles.
-Let $x$ be the variable whose domain is split at value $p$ and $I₁$, $I₂$ be the two interpolants for the case when $x < p$ and $x ≥ p$.
-If $x$ occurs in $A$ but not $B$, then $x$ cannot occur in $I$.
-Since $x$ is in $A$ then we know that $A$ implies $x < p ⇒ I₁$ and $x ≥ p ⇒ I₂$.
-Eliminating $x$ give $I = I₁ ∨ I₂$.
-A similar reasoning is applicable when $x$ occurs in $B$ but not $A$ and gives $I = I₁ ∧ I₂$.
-When $x$ occurs in both $A$ and $B$ then $x$ is kept in $I$ and acts as a selector for the values of $x$ smaller than $p$ $I₁$ is selected, otherwise $I₂$ applies.
-
-%\section{Smoothing}
-
-%Algorithms for smoothing DL-interpolants to user specified classes of nonlinear interpolants. 
-
-
-\section{Examples and Experiments}
+\input{intro}
+\input{prelim}
+\input{interpolation}
+\input{eval}
 
 
 \appendix
