@@ -1,0 +1,3 @@
+*.smt2
+*.smt2.proof
+*.smt2.model

@@ -1,2 +1,19 @@
 \section{Related Work}
 \label{sec:related}
+
+Propositional interpolation was studied by Pudl{\'a}k~\cite{MR1472134}.
+Our algorithm is very similar, however, it applies to a very different theory.
+
+Craig interpolation for theories of the reals or integers have focused on the 
+linear fragment with LA(ℚ)~\cite{DBLP:conf/tacas/McMillan04,DBLP:conf/vmcai/RybalchenkoS07} and LA(ℤ)~\cite{DBLP:conf/cade/BrilloutKRW10,DBLP:conf/tacas/GriggioLS11}.
+Our method currently handles non-linear theories over ℝ.
+We plan to expand our work to a richer proof system that also handles ℤ.
+
+Existing tools to compute interpolation such as
+\smtinterpol~\cite{DBLP:conf/spin/ChristHN12},
+\princess~\cite{DBLP:conf/cade/BrilloutKRW10},
+\zthree~\cite{DBLP:conf/fmcad/McMillan11},
+\mathsat~\cite{mathsat5} focus on linear arithmetic.
+We are the first to provide interpolant in nonlinear theories.
+
+\todo[inline]{some more, about hybrid stuff, related notions like QE, ...}

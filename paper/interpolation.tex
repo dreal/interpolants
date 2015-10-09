@@ -18,7 +18,7 @@ However, $A$ and $B$ must be at least $3δ$-unsatisfiable to guarantee that the 
 \end{remark}
 
 
-\section{Disjunctive Linear Interpolants}
+\subsection{Disjunctive Linear Interpolants}
 
 Algorithms for the generation from proof trees to disjunctions of linear constraints. 
 
@@ -79,4 +79,14 @@ Since $x$ is in $A$ then we know that $A$ implies $x < p ⇒ I₁$ and $x ≥ p 
 Eliminating $x$ give $I = I₁ ∨ I₂$.
 A similar reasoning is applicable when $x$ occurs in $B$ but not $A$ and gives $I = I₁ ∧ I₂$.
 When $x$ occurs in both $A$ and $B$ then $x$ is kept in $I$ and acts as a selector for the values of $x$ smaller than $p$ $I₁$ is selected, otherwise $I₂$ applies.
+
+\todo[inline]{the main theorem}
+
+\subsection{Extensions}
+
+\paragraph{Boolean structure}
+... combines with traditional boolean interpolation schemes as presented by Yorsh and Musuvathi~\cite{DBLP:conf/cade/YorshM05} ...
+
+\paragraph{Interpolant strength}
+... also possible to apply methods such as D'Silva et.al.~\cite{DBLP:conf/vmcai/DSilvaKPW10} ...
 
