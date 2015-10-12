@@ -1,8 +1,8 @@
 \section{Preliminaries}
 \label{sec:prelim}
 
-\paragraph{Craig interpolation.}
-We consider Craig interplants for quantifier-free first-order formulas. Given such formulas $A$ and $B$, satifying that $A ∧ B$ is unsatisfiable, an interpolant $I$ is a formula satisfying:
+\paragraph{Craig interpolation~\cite{MR0104564}.}
+We consider Craig interplants for quantifier-free first-order formulas. Given two formulas $A$ and $B$, such that $A ∧ B$ is unsatisfiable, an interpolant $I$ is a formula satisfying:
 \begin{itemize}
 \item $A ⇒ I$;
 \item $B ∧ I ⇒ ⊥$;
@@ -11,7 +11,7 @@ We consider Craig interplants for quantifier-free first-order formulas. Given su
 
 \paragraph{Nonlinear first-order theories over the reals.} 
 
-We consider first-order formulas intepreted over the real numbers. Our special focus is formulas that can contain arbitrary nonlinear functions that are {\em Type 2 computable}~\cite{CAbook,vasco}. Intuitively, Type 2 computability correpsonds to {\em numerical computability}. For our purpose, it is enough to note that this set of functions consist of all common elementrary functions, as well as solutions of Lipschitz-continuous ordinary differential equations. Thus the first-order language is extremely expressive... 
+We consider first-order formulas interpreted over the real numbers. Our special focus is formulas that can contain arbitrary nonlinear functions that are {\em Type 2 computable}~\cite{CAbook,vasco}. Intuitively, Type 2 computability corresponds to {\em numerical computability}. For our purpose, it is enough to note that this set of functions consist of all common elementary functions, as well as solutions of Lipschitz-continuous ordinary differential equations. Thus the first-order language is extremely expressive... 
 
 \paragraph{Interval constraint propagation.}
 
@@ -51,7 +51,7 @@ that may contain a solution is found or inconsistency is observed. A high-level 
 
 \paragraph{Proofs from constraint propagation.}
 
-The complete theory behind proof extraction from $\delta$-decision procedure is available in \cite{}.
+The complete theory behind proof extraction from $\delta$-decision procedure is available in~\cite{DBLP:conf/synasc/GaoKC14}..
 Here, we described a simplified version.
 The proof is divides the solution space until it can prove, using interval arithmetic, that each small piece of the solution space is empty.
 The solver uses constraints propagation and pruning steps to limit the amount of branching required.
@@ -74,7 +74,7 @@ and the proof's leaves are theory lemmas directly followed by a weakening.
 \begin{mathpar}
 \inferrule{ {} }{
   \vec x ∈ \vec D ∧ f ⇒ ⊥
-}{\textsc{ThLem}}
+}{\thLem}
 
 \inferrule{
   D_i = [l;u) \\
@@ -83,14 +83,14 @@ and the proof's leaves are theory lemmas directly followed by a weakening.
   x_i ∈ [p;u) ∧ \bigwedge_{j ≠ i} x_j ∈ D_j ∧ F ⇒ ⊥
 }{
   \vec x∈\vec D ∧ F ⇒ ⊥
-}{\textsc{Split}}
+}{\splt}
 
 \inferrule{
   F = f ∧ \bigwedge_k F_k \\
   \vec x ∈ \vec D ∧ f ⇒ ⊥
 }{
   \vec x ∈ \vec D ∧ F ⇒ ⊥
-}{\textsc{Weakening}}
+}{\weaken}
 \end{mathpar}
 \todo[inline]{can we avoid weakening/strengthening?}
 

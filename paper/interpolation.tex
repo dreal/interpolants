@@ -8,15 +8,6 @@ Introduce various parameters/templates for the interpolants.
 	\item Degrees 
 \end{itemize}
 
-\begin{remark}[δ-interpolants]
-The interpolation method that we propose uses a δ-decision procedure to build a craig interpolant.
-The properties of the interpolant means that $A ∧ ¬I$ and $B ∧ I$ are both unsatisfiable.
-However, they are not necessarily δ-unsatisfiable.
-
-To obtain an interpolant such that both $A ∧ ¬I$ and $B ∧ I$ are δ-unsatisfiable, we can weaken both $A$ and $B$ by a factor δ.
-However, $A$ and $B$ must be at least $3δ$-unsatisfiable to guarantee that the solver finds a proof of unsatisfiability.
-\end{remark}
-
 
 \subsection{Disjunctive Linear Interpolants}
 
@@ -36,7 +27,9 @@ For each proof rule we associate an partial interpolant, written in square brack
 \begin{mathpar}
 \inferrule{ {} }{
   \vec x ∈ \vec D ∧ f ⇒ ⊥ \quad [l(f) ≠ \textsc{a}]
-}{\textsc{ThLemI}}
+}{\thLemI}
+
+\vspace{1ex}
 
 \inferrule{
   D_i = [l;u) \\
@@ -48,14 +41,16 @@ For each proof rule we associate an partial interpolant, written in square brack
   \left[ \substack{ I₁ ∨ I₂     \qquad \quad ~~  \text{if} ~ l(x_i) = \textsc{a} \\
                     ite(x_i < p, I₁, I₂) ~~ \text{if} ~ l(x_i) = \textsc{ab}\\
                     I₁ ∧ I₂     \qquad \quad ~~  \text{if} ~ l(x_i) = \textsc{b}}\right]
-}{\textsc{SplitI}}
+}{\spltI}
+
+\vspace{1ex}
 
 \inferrule{
   F = f ∧ \bigwedge_k F_k \\
   \vec x ∈ \vec D ∧ f ⇒ ⊥ \quad [I]
 }{
   \vec x ∈ \vec D ∧ F ⇒ ⊥ \quad [I]
-}{\textsc{WeakeningI}}
+}{\weakenI}
 \end{mathpar}
 
 where $ite(x,y,z)$ is a shorthand for $(x ∧ y)∨(¬x ∧ z)$
@@ -66,12 +61,12 @@ Intuitively, a proof of unsatisfiability is a tiling of the solution space where
 $f$ is a witness that shows the absence of solution in a given tile.
 The interpolation rules traverse the rules and selects which tiles belong to the interpolant $I$.
 
-At the leaf level (rule \textsc{ThLemI}), the tile is in $I$ if $f$ is not part of $A$, i.e., the contradiction originates from $B$.
-If $f$ is in both $A$ and $B$ then it can be consideres as either part of $A$ or $B$.
+At the leaf level (rule \thLemI), the tile is in $I$ if $f$ is not part of $A$, i.e., the contradiction originates from $B$.
+If $f$ is in both $A$ and $B$ then it can be considered as either part of $A$ or $B$.
 Both cases leads to a correct interpolant.
-The \textsc{WeakeningI} rule does not influence the interpolant, it is only required to pick $f$ from $A ∧ B$.
+The \weakenI rule does not influence the interpolant, it is only required to pick $f$ from $A ∧ B$.
 
-The \textsc{SplitI} is the most interesting rule.
+The \spltI is the most interesting rule.
 Splitting the domains essentially defined the bounds of the subsequent tiles.
 Let $x$ be the variable whose domain is split at value $p$ and $I₁$, $I₂$ be the two interpolants for the case when $x < p$ and $x ≥ p$.
 If $x$ occurs in $A$ but not $B$, then $x$ cannot occur in $I$.
@@ -80,13 +75,93 @@ Eliminating $x$ give $I = I₁ ∨ I₂$.
 A similar reasoning is applicable when $x$ occurs in $B$ but not $A$ and gives $I = I₁ ∧ I₂$.
 When $x$ occurs in both $A$ and $B$ then $x$ is kept in $I$ and acts as a selector for the values of $x$ smaller than $p$ $I₁$ is selected, otherwise $I₂$ applies.
 
-\todo[inline]{the main theorem}
+The correctness of our method is shown by the following theorem:
+\begin{theorem}
+The rules \spltI, \thLemI, \weakenI generate a Craig interpolant $I$ from the proof of unsatisfiability of $A$ and $B$.
+\label{thm:sound}
+\end{theorem}
+\begin{proof}
+%\emph{(Sketch)}
+We prove correctness of the rules by induction.
+To express the inductive invariant, we split the domain $\vec D$ into the domains $\vec D_A$ and $\vec D_B$ which contains only the intervals of the variables occuring in $A$, $B$ respectively.
+
+At any given point in the proof, at any given point in the proof the partial interpolant $I$ is an interpolant for the formula $A$ over $\vec D_A$ and $B$ over $\vec D_B$.
+At the root of the proof tree we get an interpolant for the whole domain $\vec D = \vec D_A ∧ \vec D_B$.
+
+At the leaves of the proof, or the \thLemI rule, one of the constrain has no solution over the domain.
+Let's assume that this constraint comes from $A$.
+Then the partial interpolant $I$ is $⊥$.
+We have that $A ∧ \vec D_A ⇒ I$ by the semantics of the \thLem rule ($⊥⇒⊥$).
+Trivially $B ∧ \vec D_B ∧ I ⇒ ⊥$ and $fv(I) = ∅ ⊆ fv(A) ∩ fv(B)$.
+When the contradiction comes from $B$, a similar reasoning is applied with $I=⊤$.
+
+The \weakenI only serves to select which constraint cause the contradiction and does not changed the invariant.
+
+The \spltI rule is the most complex case.
+We have to consider whether the variable $x$ which is split come from $A$, $B$, or is shared.
+For instance, if $x\in fv(A)$ then the induction step has $\vec D_{A1} = \vec D_A ∧ x < p$ and $\vec D_{A2} = \vec D_A ∧ x ≥ p$ and $\vec D_B$ is unchanged.
+if $x ∈ fv(B)$ then $\vec D_B$ is affected and $\vec D_A$ is unchanged.
+if $x$ is shared then both $\vec D_A$ and $\vec D_B$ are affected.
+
+Let consider that $x ∈ fv(A)$ and $x ∉ fv(B)$.
+We omit the case where $x$ is in $B$ but not $A$ as it is similar.
+The induction hypothesis is\\
+\parbox{0.35\linewidth}{
+\begin{eqnarray*}
+& A ∧ (\vec D_A ∧ x < p) ⇒ I₁ \\
+& A ∧ (\vec D_A ∧ x ≥ p) ⇒ I₂ \\
+& B ∧ \vec D_B ∧ I₁ ⇒ ⊥ \\
+& B ∧ \vec D_B ∧ I₂ ⇒ ⊥
+\end{eqnarray*}
+}
+which simplifies to
+\parbox{0.35\linewidth}{
+\begin{eqnarray*}
+& A ∧ \vec D_A ⇒ I₁ ∨ I₂ \\
+& B ∧ \vec D_B ∧ (I₁ ∨ I₂) ⇒ ⊥
+\end{eqnarray*}
+}.
+
+Finally, we need to consider $x ∈ fv(A)$ and $x ∈ fv(B)$.
+The induction hypothesis is\\
+\parbox{0.38\linewidth}{
+\begin{eqnarray*}
+& A ∧ (\vec D_A ∧ x < p) ⇒ I₁ \\
+& A ∧ (\vec D_A ∧ x ≥ p) ⇒ I₂ \\
+& B ∧ (\vec D_B ∧ x < p) ∧ I₁ ⇒ ⊥ \\
+& B ∧ (\vec D_B ∧ x ≥ p) ∧ I₂ ⇒ ⊥
+\end{eqnarray*}
+}
+which simplifies to
+\parbox{0.42\linewidth}{
+\begin{eqnarray*}
+& A ∧ \vec D_A ⇒ ite(x < p, I₁, I₂)\\
+& B ∧ \vec D_B ∧ ite(x < p, I₁, I₂) ⇒ ⊥
+\end{eqnarray*}
+}.
+\qed
+\end{proof}
+
 
 \subsection{Extensions}
 
-\paragraph{Boolean structure}
-... combines with traditional boolean interpolation schemes as presented by Yorsh and Musuvathi~\cite{DBLP:conf/cade/YorshM05} ...
+\todo[inline]{yada ...}
 
-\paragraph{Interpolant strength}
-... also possible to apply methods such as D'Silva et.al.~\cite{DBLP:conf/vmcai/DSilvaKPW10} ...
+\paragraph{δ-interpolants.}
+The interpolation method that we propose uses a δ-decision procedure to build a Craig interpolant.
+The properties of the interpolant means that $A ∧ ¬I$ and $B ∧ I$ are both unsatisfiable.
+However, they are not necessarily δ-unsatisfiable.
 
+To obtain an interpolant such that both $A ∧ ¬I$ and $B ∧ I$ are δ-unsatisfiable, we can weaken both $A$ and $B$ by a factor δ.
+However, $A$ and $B$ must be at least $3δ$-unsatisfiable to guarantee that the solver finds a proof of unsatisfiability.
+Furthermore, we can also introduce perturbation only on one side in other to make the interpolant stronger of weaker.
+
+\paragraph{Boolean structure.}
+In the previous section, we shown how to compute an interpolant for the conjunctive fragment of quantififer-free nonlinear theories over ℝ.
+However, in many cases formula also contains disjunctions.
+To handle disjunctions, our method can be combined with the method presented by Yorsh and Musuvathi~\cite{DBLP:conf/cade/YorshM05} for building an interpolant from a resolution proof where some of the proof's leaves are interpolant for specific theory.
+
+
+\paragraph{Interpolant strength.}
+Do to the similarity of our method to interpolation of propositional formula we can borrow result about adapting the interpolant strenght from D'Silva et.al.~\cite{DBLP:conf/vmcai/DSilvaKPW10} to our framework.
+\todo[inline]{give some details}
