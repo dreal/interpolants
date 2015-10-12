@@ -1,15 +1,55 @@
 \section{Preliminaries}
 \label{sec:prelim}
 
-\paragraph{Craig interpolation}
-Given $A$,$B$ such that $A ∧ B$ is unsatisfiable, an interpolant $I$ is a formula satisfying:
+\paragraph{Craig interpolation.}
+We consider Craig interplants for quantifier-free first-order formulas. Given such formulas $A$ and $B$, satifying that $A ∧ B$ is unsatisfiable, an interpolant $I$ is a formula satisfying:
 \begin{itemize}
 \item $A ⇒ I$;
 \item $B ∧ I ⇒ ⊥$;
 \item $fv(I) ⊆ fv(A) ∩ fv(B)$ where $fv$ returns the free variables in a formula.
 \end{itemize}
 
-\paragraph{Proofs from $\delta$-complete decision procedures.}
+\paragraph{Nonlinear first-order theories over the reals.} 
+
+We consider first-order formulas intepreted over the real numbers. Our special focus is formulas that can contain arbitrary nonlinear functions that are {\em Type 2 computable}~\cite{CAbook,vasco}. Intuitively, Type 2 computability correpsonds to {\em numerical computability}. For our purpose, it is enough to note that this set of functions consist of all common elementrary functions, as well as solutions of Lipschitz-continuous ordinary differential equations. Thus the first-order language is extremely expressive... 
+
+\paragraph{Interval constraint propagation.}
+
+Interval Constraint Propagation (ICP)~\cite{handbookICP} finds
+solutions of real constraints using the ``branch-and-prune'' method, combining
+interval arithmetic and constraint propagation. The idea is to use interval
+extensions of functions to ``prune'' out sets of points that are not in the
+solution set and ``branch'' on intervals when
+such pruning can not be done, recursively until a small enough box
+that may contain a solution is found or inconsistency is observed. A high-level description of the decision version of ICP is given in Algorithm~\ref{icpalgo}~\cite{handbookICP,DBLP:conf/cade/GaoAC12}.
+\begin{algorithm}\label{algo1}
+\caption{ICP($f_1,...,f_m, B_0 = I_1^0\times\cdots\times I_n^0, \delta$)}\label{icpalgo}
+\begin{algorithmic}[1]
+\Statex
+    \State $S \gets B_0$
+    \While{$S \neq \emptyset$}
+        \State $B \gets S.\mathrm{pop}()$
+        \While{$\exists 1 \leq i \leq m, B \neq_{\delta} \mathrm{Prune}(B,f_i)$}
+        \State $B \gets \mathrm{Prune}(B, f_i)$
+        \EndWhile
+        \If{$B\neq \emptyset$}
+            \If{$\exists 1\leq i\leq m, |\sharp f_i(B)|\geq \delta$}
+                \State $\{B_1,B_2\} \gets \mathrm{Branch}(B, i)$
+                \State $S.\mathrm{push}(\{B_1,B_2\})$
+            \Else
+                \State \Return {\sf sat}
+            \EndIf
+        \EndIf
+    \EndWhile
+    \State \Return {\sf unsat}
+\end{algorithmic}
+\end{algorithm}
+
+
+
+
+
+\paragraph{Proofs from constraint propagation.}
 
 The complete theory behind proof extraction from $\delta$-decision procedure is available in \cite{}.
 Here, we described a simplified version.
