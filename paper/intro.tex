@@ -53,10 +53,28 @@ To each leaf in the proof, we associate ⊤ or ⊥ depending on the source of th
 The inner nodes of the proof tree correspond to case splits and are handled in a manner reminiscent of Pudl{\'a}k's algorithm~\cite{MR1472134}.
 Common variables are kept as branching points and $A$,$B$ local variables are eliminated.
 
-\todo[inline]{A concrete example of what we can compute: the formula, the proof, the interpolant, and a picture.}
+\begin{example}
+Let $A$ be $y≥x²$ and $B$ by $y ≤ -\cos(x) + 0.8$ over the domain $x∈[-1,1]$, $y∈[-1,1]$.
+A δ-decision procedure uses $A$ and $B$ to contract the domains of $x$ and $y$ by removing the parts that be shown empty using interval arithmetic.
+Figure~\ref{fig:example} shows a sequence of contraction proving the unsatisfiability of the formula.
+As the contraction occurs, we color the region of the space by the color of the \emph{opposite} formula.
+When the interval constraint propagation has finished all the initial domain is associated to either $A$ or $B$.
+The interpolant $I$ is the parts corresponding to $A$.
+$I$ is $y ≥ 0 ∧ (0.26 ≤ y ∨ (y ≤ 0.26 ∧ -0.51 ≤ x ≤ 0.51))$.
 
-We have implemented this on top of \dReal
-and we tested it with examples from geometric theorem proving, robotic design, and hybrid system verification.  
+\begin{figure}
+\centering
+\includegraphics[scale=0.04]{img/example.pdf}
+\caption{
+    Interval constraint propagation and interpolant construction where $A$ is $y≥x²$ and $B$ is $y ≤ -\cos(x) + 0.8$ over the domain $x∈[-1,1]$, $y∈[-1,1]$.
+    The $A$ is shown in green and $B$ in red.
+    The final interpolant is the green part of the space.
+}
+\label{fig:example}
+\end{figure}
+\end{example}
+
+We have implemented this on top of \dReal and we tested it with examples from geometric theorem proving, robotic design, and hybrid system verification.  
 
 % Outline of the paper
 In Section~\ref{sec:prelim}, we review notions related to interpolation, nonlinear arithmetic over the Reals and δ-decision procedures.
