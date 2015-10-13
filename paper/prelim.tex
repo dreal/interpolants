@@ -71,26 +71,50 @@ The root of the proof is has formula $A ∧ B$ and $D$ covers the entire domain,
 the inner nodes are \textsc{Split}s,
 and the proof's leaves are theory lemmas directly followed by a weakening.
 
+\begin{notation}
+Conjunction binds stronger. Intervals assume well-definedness. 
+\end{notation}
+
 \begin{mathpar}
 \inferrule{ {} }{
-  \vec x ∈ \vec D ∧ f ⇒ ⊥
-}{\thLem}
+  \vec x ∈ \vec D ∧ c ⇒ ⊥
+}{(\thLem)}\\
 
 \inferrule{
-  D_i = [l;u) \\
-  l < p < u \\\\
-  x_i ∈ [l;p) ∧ \bigwedge_{j ≠ i} x_j ∈ D_j ∧ F ⇒ ⊥ \\
-  x_i ∈ [p;u) ∧ \bigwedge_{j ≠ i} x_j ∈ D_j ∧ F ⇒ ⊥
+  C := c ∧ \bigwedge_k C_k \\
+  \vec x ∈ \vec D ∧ c ⇒ ⊥
 }{
-  \vec x∈\vec D ∧ F ⇒ ⊥
-}{\splt}
+  \vec x ∈ \vec D ∧ C ⇒ ⊥
+}{(\weaken)}\\
 
 \inferrule{
-  F = f ∧ \bigwedge_k F_k \\
-  \vec x ∈ \vec D ∧ f ⇒ ⊥
+  x_i ∈ [l_i, p] ∧ \bigwedge_{j ≠ i} x_j ∈ D_j ∧ C ⇒ ⊥ \\
+  x_i ∈ [p, u_i] ∧ \bigwedge_{j ≠ i} x_j ∈ D_j ∧ C ⇒ ⊥
 }{
-  \vec x ∈ \vec D ∧ F ⇒ ⊥
-}{\weaken}
+  x_i\in [l_i, u_i] \wedge \bigwedge_{j\neq i} x_j∈\vec D_j ∧ C ⇒ ⊥
+}{(\splt)}
 \end{mathpar}
 \todo[inline]{can we avoid weakening/strengthening?}
+
+\todo[inline,color=green]{comparing the above and below, which do you like?}
+\begin{mathpar}
+\inferrule{ {} }{
+  \neg \Big(\vec x ∈ \vec D ∧ c\Big)
+}{(\thLem)}\\
+
+\inferrule{
+  C := c ∧ \bigwedge_k C_k \\
+  \neg\Big(\vec x ∈ \vec D ∧ c\Big)
+}{
+  \neg \Big(\vec x ∈ \vec D ∧ C\Big)
+}{(\weaken)}\\
+
+\inferrule{
+  \neg\Big(x_i ∈ [l_i, p] ∧ \bigwedge_{j ≠ i} x_j ∈ D_j ∧ C\Big) \\
+ \neg\Big(x_i ∈ [p, u_i] ∧ \bigwedge_{j ≠ i} x_j ∈ D_j ∧ C\Big)
+}{
+  \neg\Big(x_i\in [l_i, u_i] \wedge \bigwedge_{j\neq i} x_j∈\vec D_j ∧ C\Big)
+}{(\splt)}
+\end{mathpar}
+
 
