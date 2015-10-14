@@ -9,15 +9,19 @@
 %       how it is done
 %           normal sat is undecidable
 %           δ-sat leverage on finite precision arithmetic what can be efficiently performed by computer
-Software often interact with the physical world.
-Plant controllers, robots, cars, etc., all theses systems contains sensors and actuators.
-Validating such systems requires requires method to reason not only about the software part, but also the environment, usually described by continuous equations.
-Moreover, most real-world systems exhibit nonlinear behaviour, even transcendental ones.
-For instance, rotation are often described using trigonometric functions.
 
-Unfortunately, automated reasoning for about nonlinear systems of equations is a hard, even undecidable in the general case~\cite{DBLP:conf/lics/GaoAC12}.
-However, recently the point of view~\cite{realQuasiDec,hybridQuasiDec} where reals are considered up to a certain precision was used to show decidability of the satisfiability for non-linear real arithmetic~\cite{DBLP:conf/lics/GaoAC12,DBLP:conf/fmcad/GaoKC13}.
-The intuition is that well engineered systems are robust, thus, are able to deal with small perturbations.
+
+%Software often interact with the physical world. Plant controllers, robots, cars, etc., all theses systems contains sensors and actuators. Validating such systems requires requires method to reason not only about the software part, but also the environment, usually described by continuous equations.
+
+Verification problems of complex embedded software can be reduced to solving logic formulas that contain continous, typically nonlinear, real functions. The framework of delta-decision procedures~\cite{DBLP:conf/lics/GaoAC12,DBLP:conf/fmcad/GaoKC13} estabishes that, under reasonable relaxations, nonlinear SMT formulas over the reals are in principle as solvable as SAT problems. Indeed, using solvers for nonlinear theories as the algorithmic engines, straightforward bounded model checking has already shown promise on nonlinear hybrid systems~\cite{}. Naturally, for enhancing scability or going beyond bounded safety, more advanced verification techniques need to be introduced. 
+
+Interpolation...
+\todo[inline]{Overview of interpolation-based methods.}
+
+%reasoning about the combined system of software and the physical environment. Modeling such environment typically requires extensive use of continuous functions over real numbers, such as solution functions of nonlinear differential equations. Thus solving logic formulas in nonlinear theories over the real numbers is a basic requirement for verification. 
+%Unfortunately, automated reasoning for about nonlinear systems of equations is a hard, even undecidable in the general case~\cite{DBLP:conf/lics/GaoAC12}.
+%However, recently the point of view~\cite{realQuasiDec,hybridQuasiDec} where reals are considered up to a certain precision was used to show decidability of the satisfiability for non-linear real arithmetic
+%The intuition is that well engineered systems are robust, thus, are able to deal with small perturbations.
 
 In the δ-satisfiability framework, a system of equations is unsatisfiable if it does not have solution even when perturbed up to a δ constant.
 The complexity of δ-satisfiability is NP without ODE~\cite{DBLP:conf/lics/GaoAC12} and PSpace with ODE~\cite{DBLP:conf/fmcad/GaoKC13}.
