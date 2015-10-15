@@ -26,34 +26,22 @@ For each proof rule we associate an partial interpolant, written in square brack
 
 \begin{mathpar}
 \inferrule{ {} }{
-  \vec x ∈ \vec D ∧ c ⇒ ⊥ \quad [l(f) ≠ \textsc{a}]
+  \vec x ∈ \vec D ∧ c \entails ⊥ \quad [l(f) ≠ \textsc{a}]
 }{(\thLemI)}\\
 
 \inferrule{
   C = c ∧ \bigwedge_k C_k \\
-  \vec x ∈ \vec D ∧ c ⇒ ⊥ \quad [I]
+  \vec x ∈ \vec D ∧ c \entails ⊥ \quad [I]
 }{
-  \vec x ∈ \vec D ∧ C ⇒ ⊥ \quad [I]
+  \vec x ∈ \vec D ∧ C \entails ⊥ \quad [I]
 }{(\weakenI)}\\
 
-%\inferrule{
-%  D_i = [l;u) \\
-%  l < p < u \\\\
-%  x_i ∈ [l;p) ∧ \bigwedge_{j ≠ i} x_j ∈ D_j ∧ F ⇒ ⊥ \quad [I₁] \\
-%  x_i ∈ [p;u) ∧ \bigwedge_{j ≠ i} x_j ∈ D_j ∧ F ⇒ ⊥ \quad [I₂] 
-%}{
-%  \vec x ∈ \vec D ∧ F ⇒ ⊥ \quad
-%  \left[ \substack{ I₁ ∨ I₂     \qquad \quad ~~  \text{if} ~ l(x_i) = \textsc{a} \\
-%                    ite(x_i < p, I₁, I₂) ~~ \text{if} ~ l(x_i) = \textsc{ab}\\
-%                    I₁ ∧ I₂     \qquad \quad ~~  \text{if} ~ l(x_i) = \textsc{b}}\right]
-%}{\spltI}
-%\vspace{1ex}
 
 \inferrule{
-  x_i ∈ [l_i, p] ∧ \bigwedge_{j ≠ i} x_j ∈ D_j ∧ C ⇒ ⊥ \quad [I₁] \quad\quad
-  x_i ∈ [p, u_i] ∧ \bigwedge_{j ≠ i} x_j ∈ D_j ∧ C ⇒ ⊥ \quad [I₂] 
+  x_i ∈ [l_i, p] ∧ \bigwedge_{j ≠ i} x_j ∈ D_j ∧ C \entails ⊥ \quad [I₁] \\\\
+  x_i ∈ [p, u_i] ∧ \bigwedge_{j ≠ i} x_j ∈ D_j ∧ C \entails ⊥ \quad [I₂] 
 }{
-  x_i\in [l_i, u_i]\wedge \bigwedge_{j\neq i} x_j ∈ \vec D_j ∧ C ⇒ ⊥ \quad
+  x_i\in [l_i, u_i]\wedge \bigwedge_{j\neq i} x_j ∈ \vec D_j ∧ C \entails ⊥ \quad
   \left[ \substack{ I₁ ∨ I₂     \qquad \quad ~~  \text{if} ~ l(x_i) = \textsc{a} \\
                     ite(x_i < p, I₁, I₂) ~~ \text{if} ~ l(x_i) = \textsc{ab}\\
                     I₁ ∧ I₂     \qquad \quad ~~  \text{if} ~ l(x_i) = \textsc{b}}\right]
@@ -150,6 +138,45 @@ which simplifies to
 \qed
 \end{proof}
 
+\begin{example}
+If we look at proof for the example in Figure~\ref{fig:example}, we get the following proof and interpolant
+
+\todo[inline]{this is partial version that still need formatting...}
+
+\begin{mathpar}
+\inferrule{
+    \inferrule{
+        \inferrule{
+            \vdots
+        }{
+            x \in [-1,1] \land y \in [0,0.26] \land A \land B \entails \bot [ I' ]
+        }{(\spltI)}
+        \inferrule{
+            \inferrule{
+                {}
+            }{
+                x \in [-1,1] \land y \in [0.26,1] \land B \entails \bot [ \top ]
+            }{(\thLemI)}
+        }{
+            x \in [-1,1] \land y \in [0.26,1] \land A \land B \entails \bot [ \top ]
+        }{(\weakenI)}
+    }{
+        x \in [-1,1] \land y \in [0,1] \land A \land B \entails \bot [ 0.26 \leq y \lor (y \leq 0.26 \land I') ]
+    }{(\spltI)}
+    \inferrule{
+        \inferrule{
+            {}
+        }{
+            x \in [-1,1] \land y \in [-1,0] \land A \entails \bot [ \bot ]
+        }{(\thLemI)}
+    }{
+        x \in [-1,1] \land y \in [-1,0] \land A \land B \entails \bot [ \bot ]
+    }{(\weakenI)}
+}{
+    x \in [-1,1] \land y \in [-1,1] \land A \land B \entails \bot [ 0 \leq y \land 0.26 \leq y \lor (y \leq 0.26 \land I') ]
+}{(\spltI)}
+\end{mathpar}
+\end{example}
 
 \subsection{Extensions}
 

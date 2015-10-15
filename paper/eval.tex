@@ -64,16 +64,15 @@ To verify such systems, we need to simplify them.
 Due to the presence of trigonometric functions we cannot use quantifier elimination for polynomial systems of equations~\cite{qepcad}.
 However, we can use interpolation as an approximation of quantifier elimination.
 
-\todo[inline]{explain how we get the equations}
-% ... they are sparse/deterministic ...
-% ... explain how we can generate a formula where the variables we don't want are located on one side only....
-% ... picture from the tests ...
+Let us consider a kinematic model, $𝓚(\vec x,\vec y,\vec z)$ where $\vec x$ is a set of design and input parameters, $\vec y$ is the variables that represent the state of each component of the robot, and $\vec z$ is the variables that represent the part of the state needed to prove the property of interest.
 
-$\vec x$ are the control and design parameters,
-$\vec y, \vec v$ are two copies the variables representing the state of each component of the robots,
-$\vec z, \vec w$ are two copies of the part of the state needed to prove the property of interest, e.g., the position of the effector of an robotic manipulator.
+For instance, in the case of a robotic manipulator, $\vec x$ contain the size of the element and the angles of the servo motors and $\vec z$ is the position of the effector.
+$\vec y$ is determined by the designed of the manipulator.
 
-$A$ is $𝓚(\vec x,\vec y,\vec z)$ and $B$ is $𝓚(\vec x,\vec v,\vec w) ∧ (\vec z-\vec w)² ≥ ε$ where $ε > δ$.
+The model we use satisfy the property that once the design and input parameters are fixed, there is a unique solution for the model.
+Therefore, we can create an interpolation query with $A$ is $𝓚(\vec x,\vec y,\vec z)$ and $B$ is $𝓚(\vec x,\vec v,\vec w) ∧ (\vec z-\vec w)² ≥ ε$ where $ε > δ$.
+$\vec y, \vec v$ are two copies of the variables we want to eliminate.
+Since the kinematic is a function of $\vec x$ which is the same for the two copies $\vec z$ and $\vec w$ should be equal.
+Therefore, the formula we build has no solution and we get an interpolant $I(\vec x,\vec z)$ which is an ε-approximation of $∃ \vec y.\,𝓚(\vec x,\vec y,\vec z)$.
 
-The interpolant $I(\vec x,\vec z)$ is an ε-approximation of $∃ \vec y.\,𝓚(\vec x,\vec y,\vec z)$.
-
+\todo[inline]{one formula with a picture}

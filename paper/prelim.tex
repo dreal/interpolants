@@ -77,21 +77,21 @@ Conjunction binds stronger. Intervals assume well-definedness.
 
 \begin{mathpar}
 \inferrule{ {} }{
-  \vec x ∈ \vec D ∧ c ⇒ ⊥
+  \vec x ∈ \vec D ∧ c \entails ⊥
 }{(\thLem)}\\
 
 \inferrule{
   C := c ∧ \bigwedge_k C_k \\
-  \vec x ∈ \vec D ∧ c ⇒ ⊥
+  \vec x ∈ \vec D ∧ c \entails ⊥
 }{
-  \vec x ∈ \vec D ∧ C ⇒ ⊥
+  \vec x ∈ \vec D ∧ C \entails ⊥
 }{(\weaken)}\\
 
 \inferrule{
-  x_i ∈ [l_i, p] ∧ \bigwedge_{j ≠ i} x_j ∈ D_j ∧ C ⇒ ⊥ \\
-  x_i ∈ [p, u_i] ∧ \bigwedge_{j ≠ i} x_j ∈ D_j ∧ C ⇒ ⊥
+  x_i ∈ [l_i, p] ∧ \bigwedge_{j ≠ i} x_j ∈ D_j ∧ C \entails ⊥ \\
+  x_i ∈ [p, u_i] ∧ \bigwedge_{j ≠ i} x_j ∈ D_j ∧ C \entails ⊥
 }{
-  x_i\in [l_i, u_i] \wedge \bigwedge_{j\neq i} x_j∈\vec D_j ∧ C ⇒ ⊥
+  x_i\in [l_i, u_i] \wedge \bigwedge_{j\neq i} x_j∈\vec D_j ∧ C \entails ⊥
 }{(\splt)}
 \end{mathpar}
 
