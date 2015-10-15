@@ -1,20 +1,9 @@
 \section{Interpolants in Nonlinear Theories}
 \label{sec:itp}
 
-Introduce various parameters/templates for the interpolants. 
-\begin{itemize}
-	\item Robustness
-	\item Boolean operations
-	\item Degrees 
-\end{itemize}
-
-
-\subsection{Disjunctive Linear Interpolants}
-
-Algorithms for the generation from proof trees to disjunctions of linear constraints. 
-
-Let $l$ be a labelling function that maps formula and variables to \textsc{a},\textsc{b}, or \textsc{ab}.
-For each proof rule we associate an partial interpolant, written in square bracket on the right of the conclusion of the rules.
+Our algorithm to construct a disjunctive linear interpolants takes as input a proof tree and a labelling functions.
+Let $l$ be the labelling function that maps formula and variables to \textsc{a},\textsc{b}, or \textsc{ab}.
+For each proof rule we associate an partial interpolant, written in square bracket on the right of the conclusion of the rule.
 
 % need a labelling function
 % ThLem: A → false 
@@ -41,7 +30,8 @@ For each proof rule we associate an partial interpolant, written in square brack
   x_i ∈ [l_i, p] ∧ \bigwedge_{j ≠ i} x_j ∈ D_j ∧ C \entails ⊥ \quad [I₁] \\\\
   x_i ∈ [p, u_i] ∧ \bigwedge_{j ≠ i} x_j ∈ D_j ∧ C \entails ⊥ \quad [I₂] 
 }{
-  x_i\in [l_i, u_i]\wedge \bigwedge_{j\neq i} x_j ∈ \vec D_j ∧ C \entails ⊥ \quad
+  x_i∈ [l_i, u_i]\wedge \bigwedge_{j\neq i} x_j ∈ D_
+  j ∧ C \entails ⊥ \quad
   \left[ \substack{ I₁ ∨ I₂     \qquad \quad ~~  \text{if} ~ l(x_i) = \textsc{a} \\
                     ite(x_i < p, I₁, I₂) ~~ \text{if} ~ l(x_i) = \textsc{ab}\\
                     I₁ ∧ I₂     \qquad \quad ~~  \text{if} ~ l(x_i) = \textsc{b}}\right]
@@ -95,7 +85,7 @@ The \weakenI only serves to select which constraint cause the contradiction and 
 
 The \spltI rule is the most complex case.
 We have to consider whether the variable $x$ which is split come from $A$, $B$, or is shared.
-For instance, if $x\in fv(A)$ then the induction step has $\vec D_{A1} = \vec D_A ∧ x < p$ and $\vec D_{A2} = \vec D_A ∧ x ≥ p$ and $\vec D_B$ is unchanged.
+For instance, if $x∈ fv(A)$ then the induction step has $\vec D_{A1} = \vec D_A ∧ x < p$ and $\vec D_{A2} = \vec D_A ∧ x ≥ p$ and $\vec D_B$ is unchanged.
 if $x ∈ fv(B)$ then $\vec D_B$ is affected and $\vec D_A$ is unchanged.
 if $x$ is shared then both $\vec D_A$ and $\vec D_B$ are affected.
 
@@ -139,48 +129,91 @@ which simplifies to
 \end{proof}
 
 \begin{example}
-If we look at proof for the example in Figure~\ref{fig:example}, we get the following proof and interpolant
+If we look at proof for the example in Figure~\ref{fig:example}, we get the following proof and interpolant:
 
-\todo[inline]{this is partial version that still need formatting...}
-
+{\small
 \begin{mathpar}
+
+\inferrule{
+    \inferrule{ {} }{
+        x ∈ [-0.51,0.51] ∧ y ∈ [0,0.26] ∧ B \entails ⊥ \quad [ ⊤ ]
+    }{(\thLemI)}
+}{
+    x ∈ [-0.51,0.51] ∧ y ∈ [0,0.26] ∧ A ∧ B \entails ⊥ \quad [ I₁: ⊤ ] \\\\ \vdots
+}{(\weakenI)}
+
 \inferrule{
     \inferrule{
-        \inferrule{
-            \vdots
-        }{
-            x \in [-1,1] \land y \in [0,0.26] \land A \land B \entails \bot [ I' ]
-        }{(\spltI)}
-        \inferrule{
-            \inferrule{
-                {}
-            }{
-                x \in [-1,1] \land y \in [0.26,1] \land B \entails \bot [ \top ]
-            }{(\thLemI)}
-        }{
-            x \in [-1,1] \land y \in [0.26,1] \land A \land B \entails \bot [ \top ]
-        }{(\weakenI)}
+        \inferrule{ {} }{
+            x ∈ [0.51,1] ∧ y ∈ [0,0.26] ∧ A \entails ⊥ \quad [ ⊥ ]
+        }{(\thLemI)}
     }{
-        x \in [-1,1] \land y \in [0,1] \land A \land B \entails \bot [ 0.26 \leq y \lor (y \leq 0.26 \land I') ]
-    }{(\spltI)}
+        x ∈ [0.51,1] ∧ y ∈ [0,0.26] ∧ A ∧ B \entails ⊥ \quad [ ⊥ ]
+    }{(\weakenI)} \\
+    \vdots ~~ [ I₁ ]
+}{
+  x ∈ [-0.51,1] ∧ y ∈ [0,0.26] ∧ a ∧ b \entails \bot \quad [ I₂: x≤0.51 ] \\\\ \vdots
+}{(\spltI)}
+
+\inferrule{
+    \vdots ~~ [ I₂ ] \\
+    \inferrule{
+        \inferrule{ {} }{
+            x ∈ [-1,-0.51] ∧ y ∈ [0,0.26] ∧ A \entails ⊥ \quad [ ⊥ ]
+        }{(\thLemI)}
+    }{
+        x ∈ [-1,-0.51] ∧ y ∈ [0,0.26] ∧ A ∧ B \entails ⊥ \quad [ ⊥ ]
+    }{(\weakenI)}
+}{
+  x ∈ [-1,1] ∧ y ∈ [0,0.26] ∧ a ∧ b \entails \bot \quad [ I₃: -0.51≤x≤0.51 ] \\\\ \vdots
+}
+        
+\inferrule{
+    \vdots ~~ [ I₃ ] \\
     \inferrule{
         \inferrule{
             {}
         }{
-            x \in [-1,1] \land y \in [-1,0] \land A \entails \bot [ \bot ]
+            x ∈ [-1,1] ∧ y ∈ [0.26,1] ∧ B \entails \bot \quad [ \top ]
         }{(\thLemI)}
     }{
-        x \in [-1,1] \land y \in [-1,0] \land A \land B \entails \bot [ \bot ]
+        x ∈ [-1,1] ∧ y ∈ [0.26,1] ∧ A ∧ B \entails \bot \quad [ \top ]
     }{(\weakenI)}
 }{
-    x \in [-1,1] \land y \in [-1,1] \land A \land B \entails \bot [ 0 \leq y \land 0.26 \leq y \lor (y \leq 0.26 \land I') ]
+    x ∈ [-1,1] ∧ y ∈ [0,1] ∧ A ∧ B \entails \bot \quad [ I₄: ~ 0.26 \leq y \lor (y \leq 0.26 ∧ I₃) ] \\\\ \vdots
+}{(\spltI)}
+
+\inferrule{
+    \inferrule{
+        \inferrule{
+            {}
+        }{
+            x ∈ [-1,1] ∧ y ∈ [-1,0] ∧ A \entails \bot \quad [ \bot ]
+        }{(\thLemI)}
+    }{
+        x ∈ [-1,1] ∧ y ∈ [-1,0] ∧ A ∧ B \entails \bot \quad [ \bot ]
+    }{(\weakenI)} \\
+    \vdots ~~ [ I₄ ]
+}{
+    x ∈ [-1,1] ∧ y ∈ [-1,1] ∧ A ∧ B \entails \bot \quad [ 0 \leq y ∧ I₄ ]
 }{(\spltI)}
 \end{mathpar}
+}
+
+\noindent
+which result in the interpolant $0≤y ∧ (0.26≤y ∨ (y≤0.26 ∧ -0.51 ≤ x ≤ 0.51))$.
 \end{example}
 
-\subsection{Extensions}
+\paragraph{Boolean structure.}
+The method we presented explain how to compute an interpolant for the conjunctive fragment of quantififer-free nonlinear theories over ℝ.
+However, in many cases formula also contains disjunctions.
+To handle disjunctions, our method can be combined with the method presented by Yorsh and Musuvathi~\cite{DBLP:conf/cade/YorshM05} for building an interpolant from a resolution proof where some of the proof's leaves are interpolant for specific theory.
 
-\todo[inline]{yada ...}
+\subsection{Interpolant Strength}
+
+When using interpolation as heuristic for accelerating fixed point computation for verification, it is difficult to know a priori what is a good interpolant.
+In such application, it is desirable to have the possibility of generating and trying multiple interpolants.
+We now explain how to get multiple interpolant of different logical strength.
 
 \paragraph{δ-interpolants.}
 The interpolation method that we propose uses a δ-decision procedure to build a Craig interpolant.
@@ -191,12 +224,9 @@ To obtain an interpolant such that both $A ∧ ¬I$ and $B ∧ I$ are δ-unsatis
 However, $A$ and $B$ must be at least $3δ$-unsatisfiable to guarantee that the solver finds a proof of unsatisfiability.
 Furthermore, we can also introduce perturbation only on one side in other to make the interpolant stronger of weaker.
 
-\paragraph{Boolean structure.}
-In the previous section, we shown how to compute an interpolant for the conjunctive fragment of quantififer-free nonlinear theories over ℝ.
-However, in many cases formula also contains disjunctions.
-To handle disjunctions, our method can be combined with the method presented by Yorsh and Musuvathi~\cite{DBLP:conf/cade/YorshM05} for building an interpolant from a resolution proof where some of the proof's leaves are interpolant for specific theory.
+\paragraph{Changing the labelling.}
+Do to the similarity of our method to interpolation of propositional formula we can borrow result about adapting the labelled interpolation system from D'Silva et.al.~\cite{DBLP:conf/vmcai/DSilvaKPW10} to our framework.
 
-
-\paragraph{Interpolant strength.}
-Do to the similarity of our method to interpolation of propositional formula we can borrow result about adapting the interpolant strenght from D'Silva et.al.~\cite{DBLP:conf/vmcai/DSilvaKPW10} to our framework.
-\todo[inline]{give some details}
+In the labelled interpolation system, it is possible to modify the \textsc{a,b,ab} labelling as long as it preserves \emph{locality}.
+The restriction over D'Silva et.al.~system is that we cannot use projection for the leaves of the proof as this projection is not computable to nonlinear theories.
+Therefore, the labelling must still enforce that the leaves maps to the partial interpolants ⊤ or ⊥.

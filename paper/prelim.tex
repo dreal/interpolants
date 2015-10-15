@@ -16,26 +16,29 @@ We consider first-order formulas interpreted over the real numbers. Our special 
 \paragraph{Interval constraint propagation.}
 
 Interval Constraint Propagation (ICP)~\cite{handbookICP} finds
-solutions of real constraints using the ``branch-and-prune'' method, combining
+solutions of real constraints using the \emph{branch-and-prune} method, combining
 interval arithmetic and constraint propagation. The idea is to use interval
-extensions of functions to ``prune'' out sets of points that are not in the
-solution set and ``branch'' on intervals when
+extensions of functions to \emph{prune} out sets of points that are not in the
+solution set and \emph{branch} on intervals when
 such pruning can not be done, recursively until a small enough box
-that may contain a solution is found or inconsistency is observed. A high-level description of the decision version of ICP is given in Algorithm~\ref{icpalgo}~\cite{handbookICP,DBLP:conf/cade/GaoAC12}.
+that may contain a solution is found or inconsistency is observed.
+A high-level description of the decision version of ICP is given in Algorithm~\ref{icpalgo}~\cite{handbookICP,DBLP:conf/cade/GaoAC12}.
+The boxes, or interval domains, are written as $\vec D$ and $c_i$ denotes the $i$th constraint.
 \begin{algorithm}\label{algo1}
-\caption{ICP($f_1,...,f_m, B_0 = I_1^0\times\cdots\times I_n^0, \delta$)}\label{icpalgo}
+\caption{ICP($c_1,...,c_m, \vec D = D_1\times\cdots\times D_n, \delta$)}\label{icpalgo}
 \begin{algorithmic}[1]
 \Statex
-    \State $S \gets B_0$
+    \State $S \gets \vec D$
     \While{$S \neq \emptyset$}
-        \State $B \gets S.\mathrm{pop}()$
-        \While{$\exists 1 \leq i \leq m, B \neq_{\delta} \mathrm{Prune}(B,f_i)$}
-        \State $B \gets \mathrm{Prune}(B, f_i)$
+        \State $\vec D \gets S.\mathrm{pop}()$
+        \While{$\exists 1 \leq i \leq m, \vec D \neq_{\delta} \mathrm{Prune}(\vec D,c_i)$}
+        \State $\vec D \gets \mathrm{Prune}(\vec D, c_i)$
         \EndWhile
-        \If{$B\neq \emptyset$}
-            \If{$\exists 1\leq i\leq m, |\sharp f_i(B)|\geq \delta$}
-                \State $\{B_1,B_2\} \gets \mathrm{Branch}(B, i)$
-                \State $S.\mathrm{push}(\{B_1,B_2\})$
+        \If{$\vec D \neq \emptyset$}
+            \If{$\exists 1\leq i\leq m, |\sharp c_i(\vec D)|\geq \delta$}
+                \State $\{\vec D_1,\vec D_2\} \gets \mathrm{Branch}(\vec D, i)$
+                \State $S.\mathrm{push}(\vec D_1)$
+                \State $S.\mathrm{push}(\vec D_2)$
             \Else
                 \State \Return {\sf sat}
             \EndIf
@@ -56,11 +59,11 @@ Here, we described a simplified version.
 The proof is divides the solution space until it can prove, using interval arithmetic, that each small piece of the solution space is empty.
 The solver uses constraints propagation and pruning steps to limit the amount of branching required.
 However, the proof it produces only need to consider two main rules: splitting and theory lemma.
-The \textsc{Split} rules divides the solution space into two disjoint subspaces.
-The theory lemmas (\textsc{ThLem}) are the leaves of the proof.
+The \splt rules divides the solution space into two disjoint subspaces.
+The theory lemmas (\thLem) are the leaves of the proof.
 They occurs when the solver managed to prove the absence of solution in a given subspace.
 The interval constraints propagation algorithms works on one constraint at the time. 
-The \textsc{Weakening} rules extract those conjunct out of the main formula.
+The \weaken rule extracts those conjunct out of the main formula.
 
 Each step of the proof has a set of variables $\vec x$ with a domain $\vec D$ and $F$ is a formula.
 We use of vectors in the formulas, writing $\vec x ∈ \vec D$ to denote $\bigwedge_i x_i ∈ D_i$.
@@ -68,7 +71,7 @@ The domains are intervals, i.e., each $D_i$ has the form $[l_i,u_i]$ where $l_i$
 Since we are looking at unsatisfiability proofs, each node implies $⊥$.
 
 The root of the proof is has formula $A ∧ B$ and $D$ covers the entire domain,
-the inner nodes are \textsc{Split}s,
+the inner nodes are \splt.
 and the proof's leaves are theory lemmas directly followed by a weakening.
 
 \begin{notation}
@@ -88,11 +91,19 @@ Conjunction binds stronger. Intervals assume well-definedness.
 }{(\weaken)}\\
 
 \inferrule{
-  x_i ∈ [l_i, p] ∧ \bigwedge_{j ≠ i} x_j ∈ D_j ∧ C \entails ⊥ \\
+  x_i ∈ [l_i, p] ∧ \bigwedge_{j ≠ i} x_j ∈ D_j ∧ C \entails ⊥ \\\\
   x_i ∈ [p, u_i] ∧ \bigwedge_{j ≠ i} x_j ∈ D_j ∧ C \entails ⊥
 }{
-  x_i\in [l_i, u_i] \wedge \bigwedge_{j\neq i} x_j∈\vec D_j ∧ C \entails ⊥
+  x_i\in [l_i, u_i] \wedge \bigwedge_{j\neq i} x_j∈ D_j ∧ C \entails ⊥
 }{(\splt)}
 \end{mathpar}
 
-\todo[inline]{in the intro we speak only of contraction, we should explain how they are turned into splits and thLem}
+%\todo[inline]{in the intro we speak only of contraction, we should explain how they are turned into splits and thLem}
+Algorithm~\ref{icpalgo} generates proof during the \emph{branching} and \emph{pruning} operations.
+Branching directly corresponds to the $\splt$ rule.
+Pruning, on the other hand, is a combination of the three rules.
+Let us look at $\vec D' = \text{Pruning}(\vec D, c_i)$.
+The constraint $c_i$ is selected with the \weaken.
+For each $D'_i=[l',u']$ which is strictly smaller than $D_i=[l,u]$, the \splt and \thLem rules are applied.
+If $l'>l$ then we split on $l$ and a lemma shows that the interval $[l',l]$ has no solution.
+The same is done for the upper bounds $u'$,$u$.
