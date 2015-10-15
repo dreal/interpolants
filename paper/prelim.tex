@@ -51,7 +51,7 @@ that may contain a solution is found or inconsistency is observed. A high-level 
 
 \paragraph{Proofs from constraint propagation.}
 
-The complete theory behind proof extraction from $\delta$-decision procedure is available in~\cite{DBLP:conf/synasc/GaoKC14}..
+The complete theory behind proof extraction from $\delta$-decision procedure is available in~\cite{DBLP:conf/synasc/GaoKC14}.
 Here, we described a simplified version.
 The proof is divides the solution space until it can prove, using interval arithmetic, that each small piece of the solution space is empty.
 The solver uses constraints propagation and pruning steps to limit the amount of branching required.
@@ -94,5 +94,5 @@ Conjunction binds stronger. Intervals assume well-definedness.
   x_i\in [l_i, u_i] \wedge \bigwedge_{j\neq i} x_j∈\vec D_j ∧ C ⇒ ⊥
 }{(\splt)}
 \end{mathpar}
-\todo[inline]{can we avoid weakening/strengthening?}
 
+\todo[inline]{in the intro we speak only of contraction, we should explain how they are turned into splits and thLem}

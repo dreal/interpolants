@@ -1,8 +1,79 @@
-\section{Examples and Experiments}
+\section{Applications and Evaluation}
 \label{sec:eval}
 
-We have implemented the interpolation algorithm in a modified version of the \dReal which is available at \url{https://github.com/dzufferey/dreal3/}.
+We have implemented the interpolation algorithm in a modified version of the \dReal which is currently available at \url{https://github.com/dzufferey/dreal3/}\footnote{Once the implementation is stable, the interpolation will be merged into the released, main repository of \dReal}.
 The interpolation hooks at the places where the proof is produced.
 Since the proofs produced by \dReal can be very large,i.e., gigabytes, the interpolants are built and simplified on-the-fly.
 The full proof is not kept.
+
+\subsection{Flyspeck benchmarks}
+
+The Flyspeck project~\cite{???} as build a mechanized proof of the Kepler conjecture.
+Part of the proof requires showing the unsatisfiability of nonlinear formulas.
+In previous work~\cite{???}, part of these examples where translated to the input format of \dReal.
+We use this example as they provide a large number of tests and allow us to get quantitative information about our interpolation algorithm.
+
+The ICP algorithm eagerly contract the domain by applying repeatedly \emph{all} the constraints. Therefore, it usually generate large proofs often involving all the constraints and all the variables.
+Interpolation can extract more precise information from the proof.
+In this test, we try to compare the size of the proof against the size of the interpolants.
+Intuitively, an interpolant which is much smaller than the proof are more likely to be useful in practice.
+
+From the flyspeck examples, we take the tests which contain conjunctions of constraints and associate A or B to each constraints with the restriction that each test must contains at least one constraint from each side.
+We run \dReal, with a 10 minute timeout, and generate 562 interpolants.
+Out of these, 92 are nontrivial.
+In Figure~\ref{fig:flyspeck} we plot the number of inequalities in the nontrivial interpolants against the size of the proof.
+For similar proofs, we see that the interpolants can be order of magnitude simpler than the proofs and other interpolants obtained by different partitions of the formula.
+The trivial interpolants still bring information as they means that the only one side is part of the unsatisfiable core.
+\todo{only 6 examples with non-trivial interpolants, and 19 counting the trivial ones}
+
+
+\begin{figure}
+\centering
+\includegraphics[scale=0.6]{img/itpsize2.pdf}
+\caption{
+    Size of the interpolants (number of inequalities) compared to the size of the proof.
+}
+\label{fig:flyspeck}
+\end{figure}
+
+
+\subsection{Hybrid system verification}
+
+... ToDo: rather about ODE than hybrid part ...
+... what is hybrid ...
+... bouncing ball: what to do when it hits the ground ...
+
+...
+In the ICP framework, the differential equations are just another kind of contractor and produce similar proofs.
+Therefore, our algorithm compute interpolants for system with ODEs without modifications.
+...
+
+
+\subsection{Robotic design}
+
+Most of the time, hybrid system verification is built around model-based design.
+An expert produces a model of the system which is then verified.
+However, it is also possible to extract models directly from the manufacturing designs.
+As part of an ongoing project about co-design of both the software and hardware parts of robots~\cite{react}, we extract equations from robotic designs.
+In the extracted model, each structural element is represented by a 3D vector for position and a unit quaternion for the orientation.
+The dimension of the elements and the joints connecting them corresponds to equations that appropriately relate the position and orientation variables.
+Active elements, such as motors, also have specific equations associated to them.
+
+This approach has own sets of challenges as we get large system of very details equations.
+To verify such systems, we need to simplify them.
+Due to the presence of trigonometric functions we cannot use quantifier elimination for polynomial systems of equations~\cite{qepcad}.
+However, we can use interpolation as an approximation of quantifier elimination.
+
+\todo[inline]{explain how we get the equations}
+% ... they are sparse/deterministic ...
+% ... explain how we can generate a formula where the variables we don't want are located on one side only....
+% ... picture from the tests ...
+
+$\vec x$ are the control and design parameters,
+$\vec y, \vec v$ are two copies the variables representing the state of each component of the robots,
+$\vec z, \vec w$ are two copies of the part of the state needed to prove the property of interest, e.g., the position of the effector of an robotic manipulator.
+
+$A$ is $𝓚(\vec x,\vec y,\vec z)$ and $B$ is $𝓚(\vec x,\vec v,\vec w) ∧ (\vec z-\vec w)² ≥ ε$ where $ε > δ$.
+
+The interpolant $I(\vec x,\vec z)$ is an ε-approximation of $∃ \vec y.\,𝓚(\vec x,\vec y,\vec z)$.
 
