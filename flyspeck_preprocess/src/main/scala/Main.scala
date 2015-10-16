@@ -14,38 +14,82 @@ object Main extends Options {
 
   def getFiles(i: String): Array[File] = {
     val folder = new File(i)
-    assert(folder.isDirectory())
-    folder.listFiles.filter(f => f.isFile && f.getName.endsWith(".smt2"))
+    if (folder.isDirectory) {
+      folder.listFiles.filter(f => f.isFile && f.getName.endsWith(".smt2"))
+    } else {
+      assert(folder.getName.endsWith(".smt2"))
+      Array(folder)
+    }
   }
 
-  def isConj(s: SExpr) = s match {
-    case SApplication("assert", List(SApplication("not", List(SApplication("or", _))))) => true
-    case _ => false
+  def nnf(s: SExpr, neg: Boolean = false): SExpr = s match {
+    case SApplication("not", List(a)) => nnf(a, !neg)
+    case SApplication("and", lst) =>
+      val s = if (neg) "or" else "and"
+      SApplication(s, lst.map(nnf(_, neg)))
+    case SApplication("or", lst) =>
+      val s = if (neg) "and" else "or"
+      SApplication(s, lst.map(nnf(_, neg)))
+    case s @ SApplication("<="|"<", lst) =>
+      val s = if (neg) ">=" else "<="
+      SApplication(s, lst)
+    case s @ SApplication(">="|">", lst) =>
+      val s = if (neg) "<=" else ">="
+      SApplication(s, lst)
+    case other => if (neg) SApplication("not", List(other)) else other
+  }
+
+  def flatten(s: SExpr): List[SExpr] = s match {
+    case SApplication("and", lst) => lst.flatMap(flatten)
+    case other => List(other)
+  }
+
+  def mapFormula(fct: SExpr => SExpr, lst: List[SExpr]): List[SExpr] = lst.map{
+    case SApplication("assert", List(f)) => SApplication("assert", List(fct(f)))
+    case other => other
+  }
+  
+  def flatMapFormula(fct: SExpr => List[SExpr], lst: List[SExpr]): List[SExpr] = lst.flatMap{
+    case SApplication("assert", List(f)) => fct(f).map(f => SApplication("assert", List(f)))
+    case other => List(other)
+  }
+
+  def isBound(s: SExpr): Boolean = s match {
+    case SApplication("assert", List(f)) => isBound(f)
+    case s @ SApplication("<="|"<"|">="|">", List(SAtom(_),SAtom(_))) => true
+    case s @ SApplication("<="|"<"|">="|">", List(SAtom(_),SAtom(_),SAtom(_))) => true
+    case other => false
+  }
+
+  def isAssert(s: SExpr): Boolean = s match {
+    case SApplication("assert", List(f)) => true
+    case other => false
   }
 
   def getConj(s: SExpr): List[SExpr] = s match {
-    case SApplication("assert", List(SApplication("not", List(lst)))) =>
-      getConj(lst).map( s => SApplication("not", List(s)))
-    case SApplication("or", lst) => lst.flatMap(getConj)
+    case SApplication("assert", List(f)) => getConj(f)
+    case SApplication("and", lst) => lst.flatMap(getConj)
     case other => List(other)
   }
 
   def split(lst: List[SExpr]): (List[SExpr],List[SExpr],List[SExpr]) = {
-    val idx = lst.indexWhere(isConj)
-    assert(idx >= 0, "no conj")
-    val prefix = lst.slice(0, idx)
-    val conjs = getConj(lst(idx))
-    val suffix = lst.slice(idx + 1, lst.length)
-    (prefix, conjs, suffix)
+    val idx1 = lst.indexWhere(isAssert)
+    val idx2 = lst.lastIndexWhere(isAssert)
+    val pre1 = lst.slice(0, idx1)
+    val suffix = lst.slice(idx2+1, lst.length)
+    val (b,c) = lst.slice(idx1,idx2+1).partition(isBound)
+    assert(c.forall(isAssert))
+    (pre1 ::: b, c, suffix)
   }
-
-  def side(expr: SExpr, side: String): SExpr = {
-    val s1 = SApplication("!", List(expr, SAtom(":side"), SAtom(side)))
-    SApplication("assert", List(s1))
+  
+  def side(expr: SExpr, s: String): SExpr = expr match {
+    case SApplication("assert", lst) => SApplication("assert", lst.map(side(_, s)))
+    case SApplication("and", lst) => SApplication("and", lst.map(side(_, s)))
+    case SApplication("or",  lst) => SApplication("or",  lst.map(side(_, s)))
+    case expr => SApplication("!", List(expr, SAtom(":side"), SAtom(s)))
   }
 
   def mkPart(ses: List[SExpr], b: Int): Seq[(List[SExpr],List[SExpr])] = {
-    //assert(ses.size >= b && b >= 0)
     assert(ses.size > b && b > 0)
     val s = ses.toArray
     def take(done: Int, pos: Int): Seq[(List[SExpr],List[SExpr])] = {
@@ -63,9 +107,14 @@ object Main extends Options {
   }
 
   def allPartitions(lst: List[SExpr]): Seq[List[SExpr]] = {
-    for (i <- 1 until lst.size;
-         (a,b) <- mkPart(lst, i))
-    yield (a.map(side(_, "A")) ::: b.map(side(_, "B")))
+    if (lst.length > 6) {
+      println("too large for all partition")
+      for (i <- 1 until lst.size-1) yield (lst.take(i).map(side(_, "A")) ::: lst.drop(i).map(side(_, "B")))
+    } else {
+      for (i <- 1 until lst.size;
+           (a,b) <- mkPart(lst, i))
+      yield (a.map(side(_, "A")) ::: b.map(side(_, "B")))
+    }
   }
 
   def name(f: File, c: Int): String = {
@@ -89,16 +138,14 @@ object Main extends Options {
   def process(f: File) {
     val reader = new BufferedReader(new FileReader(f))
     Parser.parse(reader) match {
-      case Some(lst) =>
-        if (lst.exists(isConj)) {
-          val (prefix, conjs, suffix) = split(lst)
-          if (conjs.length > 1) {
-            allPartitions(conjs).zipWithIndex.foreach{ case (c, i) => save(f, i, prefix ::: c ::: suffix) }
-          } else {
-            println(f.getName() + ": single clause (2)")
-          }
+      case Some(l0) =>
+        val l1 = mapFormula(nnf(_), l0)
+        val l2 = flatMapFormula(flatten, l1)
+        val (prefix,conjs,suffix) = split(l2)
+        if (conjs.length > 1) {
+          allPartitions(conjs).zipWithIndex.foreach{ case (c, i) => save(f, i, prefix ::: c ::: suffix) }
         } else {
-          println(f.getName() + ": single clause (1)")
+          println(f.getName() + ": single clause")
         }
       case None =>
         println(f.getName() + ": parsing failed")
