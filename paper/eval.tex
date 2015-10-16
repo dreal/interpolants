@@ -70,9 +70,51 @@ For instance, in the case of a robotic manipulator, $\vec x$ contain the size of
 $\vec y$ is determined by the designed of the manipulator.
 
 The model we use satisfy the property that once the design and input parameters are fixed, there is a unique solution for the model.
-Therefore, we can create an interpolation query with $A$ is $𝓚(\vec x,\vec y,\vec z)$ and $B$ is $𝓚(\vec x,\vec v,\vec w) ∧ (\vec z-\vec w)² ≥ ε$ where $ε > δ$.
+Therefore, we can create an interpolation query with $A$ is $𝓚(\vec x,\vec y,\vec z)$ and $B$ is $𝓚(\vec x,\vec v,\vec w) ∧ (\vec z-\vec w)² ≥ ε²$ where $ε > δ$.
 $\vec y, \vec v$ are two copies of the variables we want to eliminate.
 Since the kinematic is a function of $\vec x$ which is the same for the two copies $\vec z$ and $\vec w$ should be equal.
 Therefore, the formula we build has no solution and we get an interpolant $I(\vec x,\vec z)$ which is an ε-approximation of $∃ \vec y.\,𝓚(\vec x,\vec y,\vec z)$.
 
-\todo[inline]{one formula with a picture}
+\begin{example}
+Consider the simple robotic manipulator show in Figure~\ref{fig:robot}.
+The manipulator is composed of two beams connected by a revolute joint controlled by a servo motor.
+The first beam is fixed.
+
+The original system of equations describing this system has 22 variables: 7 for each beam, 7 for the effector, and 1 for the revolute joint.
+Using the interpolation we obtain a simpler formula with only 4 variables: 3 for the effector's position and 1 for the joint.
+Table~\ref{tbl:robot} shows some statistics about the interpolants we obtained using different ε.
+
+
+\begin{figure}
+\centering
+\includegraphics[scale=1]{img/arm.pdf}
+\caption{
+    Model of a simple robotic manipulator with one degree of freedom composed of 2 segments.
+    The segments are 100mm long.
+    The black line shows the effector's reach and the green cubes are the approximation obtained by interpolation where ε is 10mm.
+}
+\label{fig:robot}
+\end{figure}
+
+\begin{table}
+\centering
+\begin{tabular}{l|clrr}
+Model    & ~ \#var  ~~ & Theory   & \#th.~atoms & ~~ time \\
+\hline
+original & 22 & polynomial deg.~2, trig.~fct.   & 24    & - \\
+ε = 10   & 4  & linear                          & 1073  & 0.3s \\
+ε = 5    & 4  & linear                          & 2757  & 0.6s \\
+ε = 3    & 4  & linear                          & 3307  & 0.8s \\
+ε = 2    & 4  & linear                          & 6137  & 1.3s \\
+ε = 1    & 4  & linear                          & 12485 & 2.6s \\
+\end{tabular}
+\caption{
+    Comparison of the original model against approximations obtained using interpolation.
+    For the size of the formulas we report the number of theory atoms in the formula.
+    The last column shows the time \dReal takes to compute the interpolants.
+}
+\label{tbl:robot}
+\end{table}
+
+
+\end{example}
