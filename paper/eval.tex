@@ -55,25 +55,25 @@ B: &~~~~&  y_t = y₀ + \int_0^t \! -y + sin(y-1) \, \mathrm{d}y ∧ y₀ = 2 �
 \todo[inline]{a table for other ode examples}
 
 \paragraph{Robotic design.}
-Most of the time, hybrid system verification is built around model-based design.
-An expert produces a model of the system which is then verified.
+Usually, hybrid system verification is used in model-based design.
+An expert produces a model of the system which is then analysed.
 However, it is also possible to extract models directly from the manufacturing designs.
 As part of an ongoing project about co-design of both the software and hardware parts of robots~\cite{react}, we extract equations from robotic designs.
-In the extracted model, each structural element is represented by a 3D vector for position and a unit quaternion for the orientation.
-The dimension of the elements and the joints connecting them corresponds to equations that appropriately relate the position and orientation variables.
+In the extracted models, each structural element is represented by a 3D vector for its position and a unit quaternion for the orientation.
+The dimension of the elements and the joints connecting them corresponds to equations that relate the position and orientation variables.
 Active elements, such as motors, also have specific equations associated to them.
 
-This approach has own sets of challenges as we get large system of very details equations.
+This approach has its own sets of challenges as we get large systems of equations.
 To verify such systems, we need to simplify them.
 Due to the presence of trigonometric functions we cannot use quantifier elimination for polynomial systems of equations~\cite{qepcad}.
-However, we can use interpolation as an approximation of quantifier elimination.
+However, we use interpolation as an approximation of quantifier elimination.
 
 Let us consider a kinematic model, $𝓚(\vec x,\vec y,\vec z)$ where $\vec x$ is a set of design and input parameters, $\vec y$ is the variables that represent the state of each component of the robot, and $\vec z$ is the variables that represent the part of the state needed to prove the property of interest.
 
-For instance, in the case of a robotic manipulator, $\vec x$ contain the size of the element and the angles of the servo motors and $\vec z$ is the position of the effector.
+For instance, in the case of a robotic manipulator, $\vec x$ contain the sizes of each element and the angles of the servo motors and $\vec z$ is the position of the effector.
 $\vec y$ is determined by the designed of the manipulator.
 
-The model we use satisfy the property that once the design and input parameters are fixed, there is a unique solution for the model.
+Fully controlled systems have the property that once the design and input parameters are fixed, there is a unique solution for remaining variables in the model.
 Therefore, we can create an interpolation query:
 \begin{eqnarray*}
 A: &~~~~ &  𝓚(\vec x,\vec y,\vec z) ∧ \\
