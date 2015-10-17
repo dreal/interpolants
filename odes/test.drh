@@ -1,0 +1,17 @@
+[0, 20] x;
+[0, 20] y;
+[0, 10] time;
+
+{ mode 1;
+  invt:
+  flow:
+        d/dt[x] = -x;
+        d/dt[y] = -y;
+  jump:
+        (x = y) ==> @1 true;
+}
+init:
+@1	(and (x = 3) (y = 2));
+
+goal:
+@1	(x = y);
