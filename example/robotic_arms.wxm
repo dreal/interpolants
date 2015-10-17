@@ -667,5 +667,11 @@ eqs: preprocess(model8(-1000, 1000), []) $
 printIn("unscaled8.smt2", eqs);
 /* [wxMaxima: input   end   ] */
 
+/* [wxMaxima: input   start ] */
+sc8(coeff) := coeffList([x,y,z,s0x,s0y,s0z,s1x,s1y,s1z,s2x,s2y,s2z], coeff) $
+eqs: preprocess(model8(-1000, 1000), sc8(1000)) $
+printIn("model8.smt2", eqs);
+/* [wxMaxima: input   end   ] */
+
 /* Maxima can't load/batch files which end with a comment! */
 "Created with wxMaxima"$

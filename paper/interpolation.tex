@@ -129,11 +129,17 @@ which simplifies to
 \end{proof}
 
 \begin{example}
-If we look at proof for the example in Figure~\ref{fig:example}, we get the following proof and interpolant:
+If we look at proof for the example in Figure~\ref{fig:example}, we get the following proof shown in Figure~\ref{fig:proof}.
+The proof is also annotated with the partial interpolants.
+The final interpolants $I₄$ is $0≤y ∧ (0.26≤y ∨ (y≤0.26 ∧ -0.51 ≤ x ≤ 0.51))$.
 
+\begin{figure}
+\centering
+\begin{tikzpicture}
+\node (box){%
+  \begin{minipage}{\textwidth}
 {\small
 \begin{mathpar}
-
 \inferrule{
     \inferrule{ {} }{
         x ∈ [-0.51,0.51] ∧ y ∈ [0,0.26] ∧ B \entails ⊥ \quad [ ⊤ ]
@@ -199,9 +205,16 @@ If we look at proof for the example in Figure~\ref{fig:example}, we get the foll
 }{(\spltI)}
 \end{mathpar}
 }
-
-\noindent
-which result in the interpolant $0≤y ∧ (0.26≤y ∨ (y≤0.26 ∧ -0.51 ≤ x ≤ 0.51))$.
+  \end{minipage}
+};
+\draw [loosely dotted,thick] plot [smooth,tension=1] coordinates { (-0.95,4.4) (-0.0,4) (3.2,4.0) (4.1,3.4) } ;
+\draw [loosely dotted,thick] plot [smooth,tension=1] coordinates { (-0.55,1.5) (-1.5,1.2) (-4.2,1.2) (-5.63,0.6) } ;
+\draw [loosely dotted,thick] plot [smooth,tension=1] coordinates { (-0.0,-1.35) (-1.2,-1.8) (-4.5,-1.8) (-5.85,-2.3) } ;
+\draw [loosely dotted,thick] plot [smooth,tension=1] coordinates { (-0.55,-4.2) (0.3,-4.6) (3.0,-4.6) (3.96,-5.15) } ;
+\end{tikzpicture}
+\caption{Proof for $y≥x² ∧ y ≤ -\cos(x) + 0.8$ and corresponding interpolant.}
+\label{fig:proof}
+\end{figure}
 \end{example}
 
 \paragraph{Boolean structure.}

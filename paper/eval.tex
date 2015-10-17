@@ -6,25 +6,24 @@ The interpolation hooks at the places where the proof is produced.
 Since the proofs produced by \dReal can be very large,i.e., gigabytes, the interpolants are built and simplified on-the-fly.
 The full proof is not kept.
 
-\subsection{Flyspeck benchmarks}
+\paragraph{Flyspeck benchmarks.}
+\todo{change the name of that paragraph}
+The ICP algorithm eagerly contract the domain by applying repeatedly \emph{all} the constraints. Therefore, it usually generate large proofs often involving all the constraints and all the variables.
+Interpolation can extract more precise information from the proof.
+Intuitively, an interpolant which is much smaller than the proof are more likely to be useful in practice.
+In this test, we try to compare the size of the proof against the size of the interpolants using benchmark from the Flyspeck project~\cite{???} and the other examples presented in the rest of this Section.
 
 The Flyspeck project~\cite{???} as build a mechanized proof of the Kepler conjecture.
 Part of the proof requires showing the unsatisfiability of nonlinear formulas.
-In previous work~\cite{???}, part of these examples where translated to the input format of \dReal.
+In previous work~\cite{???}, part of these formulas were translated to the input format of \dReal.
 We use this example as they provide a large number of tests and allow us to get quantitative information about our interpolation algorithm.
 
-The ICP algorithm eagerly contract the domain by applying repeatedly \emph{all} the constraints. Therefore, it usually generate large proofs often involving all the constraints and all the variables.
-Interpolation can extract more precise information from the proof.
-In this test, we try to compare the size of the proof against the size of the interpolants.
-Intuitively, an interpolant which is much smaller than the proof are more likely to be useful in practice.
-
-From the flyspeck examples, we take the tests which contain conjunctions of constraints and associate A or B to each constraints with the restriction that each test must contains at least one constraint from each side.
-We run \dReal, with a 10 minute timeout, and generate 562 interpolants.
-Out of these, 92 are nontrivial.
+We run \dReal, with a 10 minute timeout, and generate XXX interpolants.
+Out of these, XXX are nontrivial.
+\todo{update those two numbers once we are done}
 In Figure~\ref{fig:flyspeck} we plot the number of inequalities in the nontrivial interpolants against the size of the proof.
 For similar proofs, we see that the interpolants can be order of magnitude simpler than the proofs and other interpolants obtained by different partitions of the formula.
 The trivial interpolants still bring information as they means that the only one side is part of the unsatisfiable core.
-\todo{only 6 examples with non-trivial interpolants, and 19 counting the trivial ones}
 
 
 \begin{figure}
@@ -37,8 +36,7 @@ The trivial interpolants still bring information as they means that the only one
 \end{figure}
 
 
-\subsection{Hybrid system verification}
-
+\paragraph{Hybrid system verification.}
 ... ToDo: rather about ODE than hybrid part ...
 ... what is hybrid ...
 ... bouncing ball: what to do when it hits the ground ...
@@ -49,8 +47,7 @@ Therefore, our algorithm compute interpolants for system with ODEs without modif
 ...
 
 
-\subsection{Robotic design}
-
+\paragraph{Robotic design.}
 Most of the time, hybrid system verification is built around model-based design.
 An expert produces a model of the system which is then verified.
 However, it is also possible to extract models directly from the manufacturing designs.
@@ -70,7 +67,11 @@ For instance, in the case of a robotic manipulator, $\vec x$ contain the size of
 $\vec y$ is determined by the designed of the manipulator.
 
 The model we use satisfy the property that once the design and input parameters are fixed, there is a unique solution for the model.
-Therefore, we can create an interpolation query with $A$ is $𝓚(\vec x,\vec y,\vec z)$ and $B$ is $𝓚(\vec x,\vec v,\vec w) ∧ (\vec z-\vec w)² ≥ ε²$ where $ε > δ$.
+Therefore, we can create an interpolation query:
+\begin{eqnarray*}
+A: &~~~~ &  𝓚(\vec x,\vec y,\vec z) ∧ \\
+B: &~~~~ &  𝓚(\vec x,\vec v,\vec w) ∧ (\vec z-\vec w)² ≥ ε² \quad \text{where} ~ ε > δ
+\end{eqnarray*}
 $\vec y, \vec v$ are two copies of the variables we want to eliminate.
 Since the kinematic is a function of $\vec x$ which is the same for the two copies $\vec z$ and $\vec w$ should be equal.
 Therefore, the formula we build has no solution and we get an interpolant $I(\vec x,\vec z)$ which is an ε-approximation of $∃ \vec y.\,𝓚(\vec x,\vec y,\vec z)$.
@@ -99,7 +100,7 @@ Table~\ref{tbl:robot} shows some statistics about the interpolants we obtained u
 \begin{table}
 \centering
 \begin{tabular}{l|clrr}
-Model    & ~ \#var  ~~ & Theory   & \#th.~atoms & ~~ time \\
+1-DOF Model & ~ \#var  ~~ & Theory   & \#th.~atoms & ~~ time \\
 \hline
 original & 22 & polynomial deg.~2, trig.~fct.   & 24    & - \\
 ε = 10   & 4  & linear                          & 1073  & 0.3s \\
@@ -108,8 +109,24 @@ original & 22 & polynomial deg.~2, trig.~fct.   & 24    & - \\
 ε = 2    & 4  & linear                          & 6137  & 1.3s \\
 ε = 1    & 4  & linear                          & 12485 & 2.6s \\
 \end{tabular}
+
+\vspace{2ex}
+
+\begin{tabular}{l|clrr}
+2-DOF Model    & ~ \#var  ~~ & Theory   & \#th.~atoms & ~~ time \\
+\hline
+original & 30 & polynomial deg.~2, trig.~fct.   & 32        & - \\
+ε = 10   & 5  & linear                          & 45686     & 2m\,7s \\
+ε = 7    & 5  & linear                          & 97068     & 3m\,51s  \\
+ε = 5    & 5  & linear                          & 184762    & 6m\,41s  \\
+ε = 3    & 5  & linear                          & 547558    & 19m\,4s  \\
+ε = 2    & 5  & linear                          & 1151454   & 41m\,51s  \\
+\end{tabular}
+
+\vspace{1ex}
+
 \caption{
-    Comparison of the original model against approximations obtained using interpolation.
+    Comparison of the original model of a 1 and 2 degree of freedom manipulator against approximations obtained using interpolation.
     For the size of the formulas we report the number of theory atoms in the formula.
     The last column shows the time \dReal takes to compute the interpolants.
 }
@@ -118,3 +135,8 @@ original & 22 & polynomial deg.~2, trig.~fct.   & 24    & - \\
 
 
 \end{example}
+
+
+
+
+
