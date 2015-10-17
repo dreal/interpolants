@@ -2,8 +2,8 @@
 \label{sec:eval}
 
 We have implemented the interpolation algorithm in a modified version of the \dReal which is currently available at \url{https://github.com/dzufferey/dreal3/}\footnote{Once the implementation is stable, the interpolation will be merged into the released, main repository of \dReal}.
-The interpolation hooks at the places where the proof is produced.
 Since the proofs produced by \dReal can be very large,i.e., gigabytes, the interpolants are built and simplified on-the-fly.
+We modified the ICP loop and the contractors which are responsible for the pruning steps.
 The full proof is not kept.
 
 \paragraph{Flyspeck benchmarks.}

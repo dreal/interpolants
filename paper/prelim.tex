@@ -3,6 +3,7 @@
 
 \paragraph{Craig interpolation~\cite{MR0104564}.}
 We consider Craig interplants for quantifier-free first-order formulas. Given two formulas $A$ and $B$, such that $A ∧ B$ is unsatisfiable, an interpolant $I$ is a formula satisfying:
+\todo{should we use ⇒ or $\entails$. I would rather keep $\entails$ for the proof trees.}
 \begin{itemize}
 \item $A ⇒ I$;
 \item $B ∧ I ⇒ ⊥$;
@@ -11,7 +12,7 @@ We consider Craig interplants for quantifier-free first-order formulas. Given tw
 
 \paragraph{Nonlinear first-order theories over the reals.} 
 
-We consider first-order formulas interpreted over the real numbers. Our special focus is formulas that can contain arbitrary nonlinear functions that are {\em Type 2 computable}~\cite{CAbook,vasco}. Intuitively, Type 2 computability corresponds to {\em numerical computability}. For our purpose, it is enough to note that this set of functions consist of all common elementary functions, as well as solutions of Lipschitz-continuous ordinary differential equations. Thus the first-order language is extremely expressive... 
+We consider first-order formulas interpreted over the real numbers. Our special focus is formulas that can contain arbitrary nonlinear functions that are {\em Type 2 computable}~\cite{CAbook,vasco}. Intuitively, Type 2 computability corresponds to {\em numerical computability}. For our purpose, it is enough to note that this set of functions consist of all common elementary functions, as well as solutions of Lipschitz-continuous ordinary differential equations. Thus the first-order language is extremely expressive... \todo{why the ... ???}
 
 \paragraph{Interval constraint propagation.}
 
@@ -59,6 +60,7 @@ Here, we described a simplified version.
 The proof is divides the solution space until it can prove, using interval arithmetic, that each small piece of the solution space is empty.
 The solver uses constraints propagation and pruning steps to limit the amount of branching required.
 However, the proof it produces only need to consider two main rules: splitting and theory lemma.
+The rules are shown in Figure~\ref{fig:rules}. \todo{caption of that fig}
 The \splt rules divides the solution space into two disjoint subspaces.
 The theory lemmas (\thLem) are the leaves of the proof.
 They occurs when the solver managed to prove the absence of solution in a given subspace.
@@ -78,6 +80,8 @@ and the proof's leaves are theory lemmas directly followed by a weakening.
 Conjunction binds stronger. Intervals assume well-definedness. 
 \end{notation}
 
+\begin{figure}
+\centering
 \begin{mathpar}
 \inferrule{ {} }{
   \vec x ∈ \vec D ∧ c \entails ⊥
@@ -97,8 +101,10 @@ Conjunction binds stronger. Intervals assume well-definedness.
   x_i\in [l_i, u_i] \wedge \bigwedge_{j\neq i} x_j∈ D_j ∧ C \entails ⊥
 }{(\splt)}
 \end{mathpar}
+\caption{Proof rules ...}
+\label{fig:rules}
+\end{figure}
 
-%\todo[inline]{in the intro we speak only of contraction, we should explain how they are turned into splits and thLem}
 Algorithm~\ref{icpalgo} generates proof during the \emph{branching} and \emph{pruning} operations.
 Branching directly corresponds to the $\splt$ rule.
 Pruning, on the other hand, is a combination of the three rules.
@@ -107,3 +113,5 @@ The constraint $c_i$ is selected with the \weaken.
 For each $D'_i=[l',u']$ which is strictly smaller than $D_i=[l,u]$, the \splt and \thLem rules are applied.
 If $l'>l$ then we split on $l$ and a lemma shows that the interval $[l',l]$ has no solution.
 The same is done for the upper bounds $u'$,$u$.
+
+\todo[inline]{a picture that shows the link between the contraction and the pruning}

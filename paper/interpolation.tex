@@ -1,9 +1,10 @@
 \section{Interpolants in Nonlinear Theories}
 \label{sec:itp}
 
-Our algorithm to construct a disjunctive linear interpolants takes as input a proof tree and a labelling functions.
+Our method for constructing a disjunctive linear interpolants takes as input a proof tree and a labelling functions.
 Let $l$ be the labelling function that maps formula and variables to \textsc{a},\textsc{b}, or \textsc{ab}.
 For each proof rule we associate an partial interpolant, written in square bracket on the right of the conclusion of the rule.
+Figure~\ref{fig:rulesI} shows the modified rules.
 
 % need a labelling function
 % ThLem: A → false 
@@ -13,6 +14,8 @@ For each proof rule we associate an partial interpolant, written in square brack
 %        B → I₁ ∧ I₂
 % Weakening: identify
 
+\begin{figure}
+\centering
 \begin{mathpar}
 \inferrule{ {} }{
   \vec x ∈ \vec D ∧ c \entails ⊥ \quad [l(f) ≠ \textsc{a}]
@@ -32,25 +35,26 @@ For each proof rule we associate an partial interpolant, written in square brack
 }{
   x_i∈ [l_i, u_i]\wedge \bigwedge_{j\neq i} x_j ∈ D_
   j ∧ C \entails ⊥ \quad
-  \left[ \substack{ I₁ ∨ I₂     \qquad \quad ~~  \text{if} ~ l(x_i) = \textsc{a} \\
+  \left[{\large \substack{ I₁ ∨ I₂     \qquad \quad ~~  \text{if} ~ l(x_i) = \textsc{a} \\
                     ite(x_i < p, I₁, I₂) ~~ \text{if} ~ l(x_i) = \textsc{ab}\\
-                    I₁ ∧ I₂     \qquad \quad ~~  \text{if} ~ l(x_i) = \textsc{b}}\right]
+                    I₁ ∧ I₂     \qquad \quad ~~  \text{if} ~ l(x_i) = \textsc{b}} }\right ]
 }{(\spltI)}
 
 \end{mathpar}
-
 where $ite(x,y,z)$ is a shorthand for $(x ∧ y)∨(¬x ∧ z)$
+\caption{Interpolant producing proof rules}
+\label{fig:rulesI}
+\end{figure}
 
-\todo[inline]{find a better way to format that.}
 
-Intuitively, a proof of unsatisfiability is a tiling of the solution space where each tile is associated with a conjunct $f$ from $A ∧ B$.
-$f$ is a witness that shows the absence of solution in a given tile.
+Intuitively, a proof of unsatisfiability is a tiling of the solution space where each tile is associated with a conjunct $c$ from $A ∧ B$.
+$c$ is a witness that shows the absence of solution in a given tile.
 The interpolation rules traverse the rules and selects which tiles belong to the interpolant $I$.
 
-At the leaf level (rule \thLemI), the tile is in $I$ if $f$ is not part of $A$, i.e., the contradiction originates from $B$.
-If $f$ is in both $A$ and $B$ then it can be considered as either part of $A$ or $B$.
+At the leaf level (rule \thLemI), the tile is in $I$ if $c$ is not part of $A$, i.e., the contradiction originates from $B$.
+If $c$ is in both $A$ and $B$ then it can be considered as either part of $A$ or $B$.
 Both cases leads to a correct interpolant.
-The \weakenI rule does not influence the interpolant, it is only required to pick $f$ from $A ∧ B$.
+The \weakenI rule does not influence the interpolant, it is only required to pick $c$ from $A ∧ B$.
 
 The \spltI is the most interesting rule.
 Splitting the domains essentially defined the bounds of the subsequent tiles.
@@ -78,7 +82,7 @@ At the leaves of the proof, or the \thLemI rule, one of the constrain has no sol
 Let's assume that this constraint comes from $A$.
 Then the partial interpolant $I$ is $⊥$.
 We have that $A ∧ \vec D_A ⇒ I$ by the semantics of the \thLem rule ($⊥⇒⊥$).
-Trivially $B ∧ \vec D_B ∧ I ⇒ ⊥$ and $fv(I) = ∅ ⊆ fv(A) ∩ fv(B)$.
+Trivially, $B ∧ \vec D_B ∧ I ⇒ ⊥$ and $fv(I) = ∅ ⊆ fv(A) ∩ fv(B)$.
 When the contradiction comes from $B$, a similar reasoning is applied with $I=⊤$.
 
 The \weakenI only serves to select which constraint cause the contradiction and does not changed the invariant.
@@ -129,9 +133,8 @@ which simplifies to
 \end{proof}
 
 \begin{example}
-If we look at proof for the example in Figure~\ref{fig:example}, we get the following proof shown in Figure~\ref{fig:proof}.
-The proof is also annotated with the partial interpolants.
-The final interpolants $I₄$ is $0≤y ∧ (0.26≤y ∨ (y≤0.26 ∧ -0.51 ≤ x ≤ 0.51))$.
+If we look at proof for the example in Figure~\ref{fig:example}, we get the proof annotated with the partial interpolants shown in Figure~\ref{fig:proof}.
+The final interpolants $I₅$ is $0≤y ∧ (0.26≤y ∨ (y≤0.26 ∧ -0.51 ≤ x ≤ 0.51))$.
 
 \begin{figure}
 \centering
@@ -201,7 +204,7 @@ The final interpolants $I₄$ is $0≤y ∧ (0.26≤y ∨ (y≤0.26 ∧ -0.51 �
     }{(\weakenI)} \\
     \vdots ~~ [ I₄ ]
 }{
-    x ∈ [-1,1] ∧ y ∈ [-1,1] ∧ A ∧ B \entails \bot \quad [ 0 \leq y ∧ I₄ ]
+    x ∈ [-1,1] ∧ y ∈ [-1,1] ∧ A ∧ B \entails \bot \quad [ I₅: ~ 0 \leq y ∧ I₄ ]
 }{(\spltI)}
 \end{mathpar}
 }
@@ -212,34 +215,38 @@ The final interpolants $I₄$ is $0≤y ∧ (0.26≤y ∨ (y≤0.26 ∧ -0.51 �
 \draw [loosely dotted,thick] plot [smooth,tension=1] coordinates { (-0.0,-1.35) (-1.2,-1.8) (-4.5,-1.8) (-5.85,-2.3) } ;
 \draw [loosely dotted,thick] plot [smooth,tension=1] coordinates { (-0.55,-4.2) (0.3,-4.6) (3.0,-4.6) (3.96,-5.15) } ;
 \end{tikzpicture}
-\caption{Proof for $y≥x² ∧ y ≤ -\cos(x) + 0.8$ and corresponding interpolant.}
+\caption{Proof of unsatisfiability where $A$ is $y≥x²$, $B$ is $y ≤ -\cos(x) + 0.8$ along with the corresponding interpolant}
 \label{fig:proof}
 \end{figure}
 \end{example}
 
 \paragraph{Boolean structure.}
-The method we presented explain how to compute an interpolant for the conjunctive fragment of quantififer-free nonlinear theories over ℝ.
+The method we presented explain how to compute an interpolant for the conjunctive fragment of quantifier-free nonlinear theories over the reals.
 However, in many cases formula also contains disjunctions.
-To handle disjunctions, our method can be combined with the method presented by Yorsh and Musuvathi~\cite{DBLP:conf/cade/YorshM05} for building an interpolant from a resolution proof where some of the proof's leaves are interpolant for specific theory.
+To handle disjunctions, our method can be combined with the method presented by Yorsh and Musuvathi~\cite{DBLP:conf/cade/YorshM05} for building an interpolant from a resolution proof where some of the proof's leaves carry theory interpolants.
 
 \subsection{Interpolant Strength}
 
-When using interpolation as heuristic for accelerating fixed point computation for verification, it is difficult to know a priori what is a good interpolant.
-In such application, it is desirable to have the possibility of generating and trying multiple interpolants.
+%When using interpolation as an heuristic to accelerate fixed point computation for verification,
+For any two formulas $A$,$B$ which conjunction is unsatisfiable, the interpolant $I$ is not unique.
+In practice, it is difficult to know a priori what is a good interpolant.
+Therefore, it is desirable to have the possibility of generating and trying multiple interpolants.
 We now explain how to get multiple interpolant of different logical strength.
+
+\todo[inline]{then next two paragraph could use a better explanation}
 
 \paragraph{δ-interpolants.}
 The interpolation method that we propose uses a δ-decision procedure to build a Craig interpolant.
-The properties of the interpolant means that $A ∧ ¬I$ and $B ∧ I$ are both unsatisfiable.
-However, they are not necessarily δ-unsatisfiable.
+$I$ being an interpolant means that $A ∧ ¬I$ and $B ∧ I$ are both unsatisfiable.
+However, these formulas might still be δ-satisfiable.
 
 To obtain an interpolant such that both $A ∧ ¬I$ and $B ∧ I$ are δ-unsatisfiable, we can weaken both $A$ and $B$ by a factor δ.
 However, $A$ and $B$ must be at least $3δ$-unsatisfiable to guarantee that the solver finds a proof of unsatisfiability.
 Furthermore, we can also introduce perturbation only on one side in other to make the interpolant stronger of weaker.
 
 \paragraph{Changing the labelling.}
-Do to the similarity of our method to interpolation of propositional formula we can borrow result about adapting the labelled interpolation system from D'Silva et.al.~\cite{DBLP:conf/vmcai/DSilvaKPW10} to our framework.
+Due to the similarity of our method to the interpolation of propositional formula we can adapt the labelled interpolation system from D'Silva et.al.~\cite{DBLP:conf/vmcai/DSilvaKPW10} to our framework.
 
-In the labelled interpolation system, it is possible to modify the \textsc{a,b,ab} labelling as long as it preserves \emph{locality}.
-The restriction over D'Silva et.al.~system is that we cannot use projection for the leaves of the proof as this projection is not computable to nonlinear theories.
+In the labelled interpolation system, it is possible to modify the \textsc{a,b,ab} labelling as long as it preserves \emph{locality}, see \cite{DBLP:conf/vmcai/DSilvaKPW10} for the details.
+A further restriction in our case is that we cannot use projections of constraint at the proof's leaves as the projection is not computable in nonlinear theories.
 Therefore, the labelling must still enforce that the leaves maps to the partial interpolants ⊤ or ⊥.
