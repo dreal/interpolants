@@ -8,10 +8,14 @@ object Main extends Options {
 
   var in: Option[String] = None
   var out: Option[String] = None
+  var x = "x"
+  var y = "y"
   val usage = "..."
 
   newOption("-i", SString( s => in = Some(s) ), "input file")
   newOption("-o", SString( s => out = Some(s) ), "output file")
+  newOption("-x", SString( s => x = s ), "x axis")
+  newOption("-y", SString( s => y = s ), "y axis")
 
   def sexpr2formula(s: SExpr): Formula = s match {
     case SAtom("true") => True()
@@ -37,13 +41,15 @@ object Main extends Options {
   }
 
   def toSVG(fname: String, cubes: Iterable[Map[Variable,(Double,Double)]]) {
+    val vx = Variable(x)
+    val vy = Variable(y)
     println("saving to " + fname)
     val writer = new BufferedWriter(new FileWriter(fname))
     writer.write("<svg xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\">")
     writer.newLine
     for (c <- cubes) {
-      val (lx,ux) = c(Variable("x"))
-      val (ly,uy) = c(Variable("y"))
+      val (lx,ux) = c(vx)
+      val (ly,uy) = c(vy)
       writer.write("<rect x=\""+lx+"\" y=\""+ly+"\" height=\""+(uy-ly)+"\" width=\""+(ux-lx)+"\" style=\"fill: #aa0000\"/>")
       writer.newLine
     }
@@ -75,9 +81,9 @@ object Main extends Options {
         println("bounds " + bounds)
         val cubes = hyperCubes(bounds, itp).toSet
         printCubes(cubes)
-        val iv = input.map(Variable(_))
-        println("projecting out: " + input) 
-        val cubes2 = cubes.map( _ -- iv )
+        val toProject = itp.freeVariables.filter( v => v.name != x && v.name != y )
+        println("projecting out: " + toProject ) 
+        val cubes2 = cubes.map( _ -- toProject )
         printCubes(cubes2)
         out.foreach( o => toSVG(o, cubes2) )
       case other =>
