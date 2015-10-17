@@ -101,7 +101,7 @@ Conjunction binds stronger. Intervals assume well-definedness.
   x_i\in [l_i, u_i] \wedge \bigwedge_{j\neq i} x_j∈ D_j ∧ C \entails ⊥
 }{(\splt)}
 \end{mathpar}
-\caption{Proof rules ...}
+\caption{Proof rules for ICP}
 \label{fig:rules}
 \end{figure}
 
@@ -113,5 +113,35 @@ The constraint $c_i$ is selected with the \weaken.
 For each $D'_i=[l',u']$ which is strictly smaller than $D_i=[l,u]$, the \splt and \thLem rules are applied.
 If $l'>l$ then we split on $l$ and a lemma shows that the interval $[l',l]$ has no solution.
 The same is done for the upper bounds $u'$,$u$.
+Figure~\ref{fig:prune} shows a pruning step and the corresponding proof.
 
-\todo[inline]{a picture that shows the link between the contraction and the pruning}
+\begin{figure}
+\centering
+\begin{tikzpicture}
+\node (n0) at (-1.2, 0.1) {\includegraphics[scale=0.4]{img/pruning.pdf}};
+\node (n1) at ( 0.0, 0.85) {$u$};
+\node (n2) at ( 0.05, 0.2) {$u'$};
+\node (n3) at ( 0.0,-1.0) {$l$};
+\node (n4) at (-1.0, 1.5) {pruning by $c_i$};
+\node (n5) at (0.8, -0.2) {\large \ldots};
+\node (n6) at (6.0, 0.0) {\begin{minipage}{0.7\textwidth}
+{\small
+\begin{mathpar}
+\inferrule{
+    \vdots\\
+    \inferrule{
+        \inferrule{ {} }{ x ∈ [u',u] ∧ c_i \entails ⊥ }{(\thLem)}
+    }{
+        x ∈ [u',u] ∧ c_i ∧ \bigwedge_{k≠i} c_k \entails ⊥ 
+    }{(\weaken)} \\
+}{
+    x ∈ [l,u] ∧ \bigwedge_k c_k \entails ⊥
+}{(\splt)}
+\end{mathpar}
+}
+\end{minipage}
+};
+\end{tikzpicture}
+\caption{Pruning operation and the corresponding proof}
+\label{fig:prune}
+\end{figure}
