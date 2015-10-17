@@ -1,0 +1,17 @@
+\paragraph{Handling ODE constraints.} A special focus of delta-complete decision procedures is on constraints that are defined by ordinary differential equations, which is important for hybrid system verification. In the logic formulas, the ODEs are treated simple as a class of constraints, over variables that represent both state space and time. Here we elaborate on the proofs and interpolants for the ODE constraints.  
+
+ Let $t_0, T\in \mathbb{R}$ and $g:\mathbb{R}^n\rightarrow \mathbb{R}$ be a Lipschitz-continuous Type 2 computable function. Let $t_0, T\in \mathbb{R}$ satisfy $t_0\leq T$ and $\vec x_0\in \mathbb{R}^n$. Consider the initial value problem
+\[\frac{\mathrm{d}\vec x}{\mathrm{d}t} = \vec g(\vec x(t))\mbox{ and } \ \vec x(t_0) = \vec x_0, \mbox{ where }t\in [t_0, T].\]
+It has a solution function $\vec x: [t_0, T]\rightarrow \mathbb{R}^n$, which is itself a Type 2 computable function~\cite{CAbook}. Thus, in the first-order language $\lrf$ we can write formulas like
+\[\Big(||\vec x_0||=0\Big) \wedge\Big( \vec x_t = \vec x_0+\int_0^t \vec g(\vec x(s))\mathrm{d}s\Big) \wedge\Big(||\vec x_t|| > 1\Big)\]
+which is satisfiable when the system defined by the vector field $\vec g$ can have a trajectory from some point $||\vec x(0)||=0$ to $||\vec x(t)||=1$ after time $t$. Note that we use first-order variable vectors $\vec x_0$ and $\vec x_t$ to represent the value of the solution function $\vec x$ at time $0$ and $t$. Also, the combination of equality and integration in the second conjunct of the formula simply denotes a single constraint (i.e., predicate) over the variables $(\vec x_0, \vec x_t, t)$. 
+
+In the $\delta$-decision framework, we perform interval-based integration for ODE constraints that satisfies the following. Suppose the time domain for the ODE constraint in question is in $[t_0,T]$. Let $t_0\leq t_1\leq \cdots t_m\leq T$ be a sequence of time points. An interval-based integration algorithms compute boxes $B_{t_1},...,B_{t_m}$ such that 
+$$\forall i\in \{1,...,m\},\; \vec [x(t_i; B_{t_0})] = \{\vec x(t): t_0\leq t\leq t_i, \vec x_0\in B_{\vec x_0}\}\subseteq B_{t_i}.$$
+Namely, it computes boxes at discrete time points that contain all possible reachable states at those points. Using such interation operations, we define forward, backward, and time-domina pruning operators on ODE constraints. 
+
+\todo[inline]{more}
+
+
+
+

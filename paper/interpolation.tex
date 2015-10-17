@@ -14,6 +14,8 @@ Figure~\ref{fig:rulesI} shows the modified rules.
 %        B → I₁ ∧ I₂
 % Weakening: identify
 
+\subsection{Core Algorithms}
+
 \begin{figure}
 \centering
 \begin{mathpar}
@@ -225,7 +227,10 @@ The method we presented explain how to compute an interpolant for the conjunctiv
 However, in many cases formula also contains disjunctions.
 To handle disjunctions, our method can be combined with the method presented by Yorsh and Musuvathi~\cite{DBLP:conf/cade/YorshM05} for building an interpolant from a resolution proof where some of the proof's leaves carry theory interpolants.
 
-\subsection{Interpolant Strength}
+\input{odes.tex}
+
+
+\subsection{Extensions}
 
 %When using interpolation as an heuristic to accelerate fixed point computation for verification,
 For any two formulas $A$,$B$ which conjunction is unsatisfiable, the interpolant $I$ is not unique.
@@ -233,7 +238,8 @@ In practice, it is difficult to know a priori what is a good interpolant.
 Therefore, it is desirable to have the possibility of generating and trying multiple interpolants.
 We now explain how to get multiple interpolant of different logical strength.
 
-\paragraph{δ-interpolants.}
+\paragraph{Parameterizing interpolation strength.}
+
 The interpolation method that we propose uses a δ-decision procedure to build a Craig interpolant.
 $I$ being an interpolant means that $A ∧ ¬I$ and $B ∧ I$ are both unsatisfiable.
 However, these formulas might still be δ-satisfiable.
