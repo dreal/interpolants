@@ -38,14 +38,23 @@ The trivial interpolants still bring information as they means that the only one
 
 \paragraph{Hybrid system verification.}
 ... ToDo: rather about ODE than hybrid part ...
-... what is hybrid ...
-... bouncing ball: what to do when it hits the ground ...
 
-...
-In the ICP framework, the differential equations are just another kind of contractor and produce similar proofs.
-Therefore, our algorithm compute interpolants for system with ODEs without modifications.
-...
+Figure~\ref{fig:ode} shows an interpolant obtained by for the following system of ODEs:
+\begin{eqnarray*}
+A: &~~~~&  x_t = x₀ + \int_0^t \! -x \, \mathrm{d}x ∧ x₀ = 3 \\
+B: &~~~~&  y_t = y₀ + \int_0^t \! -y \, \mathrm{d}y ∧ y₀ = 2 ∧ x_t = y_t
+\end{eqnarray*}
 
+\todo[inline]{a more interesting example}
+
+\begin{figure}
+\centering
+\includegraphics[scale=0.6]{img/ode.pdf}
+\caption{
+    ToDo ...
+}
+\label{fig:ode}
+\end{figure}
 
 \paragraph{Robotic design.}
 Most of the time, hybrid system verification is built around model-based design.
@@ -83,7 +92,7 @@ The first beam is fixed.
 
 The original system of equations describing this system has 22 variables: 7 for each beam, 7 for the effector, and 1 for the revolute joint.
 Using the interpolation we obtain a simpler formula with only 4 variables: 3 for the effector's position and 1 for the joint.
-Table~\ref{tbl:robot} shows some statistics about the interpolants we obtained using different ε.
+Table~\ref{tbl:robot} shows some statistics about the interpolants we obtained using different ε for a one and a two degrees of freedom manipulators.
 
 
 \begin{figure}
@@ -130,7 +139,7 @@ original & 30 & polynomial deg.~2, trig.~fct.   & 32        & - \\
 \vspace{1ex}
 
 \caption{
-    Comparison of the original model of a 1 and 2 degree of freedom manipulator against approximations obtained using interpolation.
+    Comparison of the original model of a 1 and 2 degrees of freedom manipulator against approximations obtained using interpolation.
     For the size of the formulas we report the number of theory atoms in the formula.
     The last column shows the time \dReal takes to compute the interpolants.
 }
