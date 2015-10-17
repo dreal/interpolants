@@ -3,7 +3,6 @@
 
 \paragraph{Craig interpolation~\cite{MR0104564}.}
 We consider Craig interplants for quantifier-free first-order formulas. Given two formulas $A$ and $B$, such that $A ∧ B$ is unsatisfiable, an interpolant $I$ is a formula satisfying:
-\todo{should we use ⇒ or $\entails$. I would rather keep $\entails$ for the proof trees.}
 \begin{itemize}
 \item $A ⇒ I$;
 \item $B ∧ I ⇒ ⊥$;
@@ -12,7 +11,7 @@ We consider Craig interplants for quantifier-free first-order formulas. Given tw
 
 \paragraph{Nonlinear first-order theories over the reals.} 
 
-We consider first-order formulas interpreted over the real numbers. Our special focus is formulas that can contain arbitrary nonlinear functions that are {\em Type 2 computable}~\cite{CAbook,vasco}. Intuitively, Type 2 computability corresponds to {\em numerical computability}. For our purpose, it is enough to note that this set of functions consist of all common elementary functions, as well as solutions of Lipschitz-continuous ordinary differential equations. Thus the first-order language is extremely expressive... \todo{why the ... ???}
+We consider first-order formulas interpreted over the real numbers. Our special focus is formulas that can contain arbitrary nonlinear functions that are {\em Type 2 computable}~\cite{CAbook,vasco}. Intuitively, Type 2 computability corresponds to {\em numerical computability}. For our purpose, it is enough to note that this set of functions consist of all common elementary functions, as well as solutions of Lipschitz-continuous ordinary differential equations. Thus, the first-order language is extremely expressive... \todo{why the ... ???}
 
 \paragraph{Interval constraint propagation.}
 
@@ -48,7 +47,7 @@ The boxes, or interval domains, are written as $\vec D$ and $c_i$ denotes the $i
     \State \Return {\sf unsat}
 \end{algorithmic}
 \end{algorithm}
-
+\todo[inline]{explain the $\sharp c_i$ in figure}
 
 
 
@@ -111,9 +110,10 @@ Pruning, on the other hand, is a combination of the three rules.
 Let us look at $\vec D' = \text{Pruning}(\vec D, c_i)$.
 The constraint $c_i$ is selected with the \weaken.
 For each $D'_i=[l',u']$ which is strictly smaller than $D_i=[l,u]$, the \splt and \thLem rules are applied.
-If $l'>l$ then we split on $l$ and a lemma shows that the interval $[l',l]$ has no solution.
-The same is done for the upper bounds $u'$,$u$.
+If $u'<u$ then we split on $u'$ and a lemma shows that the interval $[u,u']$ has no solution.
+The same is done for the lower bounds $l'$,$l$.
 Figure~\ref{fig:prune} shows a pruning step and the corresponding proof.
+\todo{say some more about the left side of the split in the figure, add a better caption to the figure}
 
 \begin{figure}
 \centering
