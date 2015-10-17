@@ -233,8 +233,6 @@ In practice, it is difficult to know a priori what is a good interpolant.
 Therefore, it is desirable to have the possibility of generating and trying multiple interpolants.
 We now explain how to get multiple interpolant of different logical strength.
 
-\todo[inline]{then next two paragraph could use a better explanation}
-
 \paragraph{δ-interpolants.}
 The interpolation method that we propose uses a δ-decision procedure to build a Craig interpolant.
 $I$ being an interpolant means that $A ∧ ¬I$ and $B ∧ I$ are both unsatisfiable.
@@ -242,9 +240,17 @@ However, these formulas might still be δ-satisfiable.
 
 To obtain an interpolant such that both $A ∧ ¬I$ and $B ∧ I$ are δ-unsatisfiable, we can weaken both $A$ and $B$ by a factor δ.
 However, $A$ and $B$ must be at least $3δ$-unsatisfiable to guarantee that the solver finds a proof of unsatisfiability.
-Furthermore, we can also introduce perturbation only on one side in other to make the interpolant stronger of weaker.
+Furthermore, we can also introduce perturbations only on one side in other to make the interpolant stronger of weaker.
+
+To introduce a perturbation $\xi$, we apply the following rewriting to every inequalities in $A$ and/or $B$:
+\begin{eqnarray*}
+L = R & ~~ \mapsto ~~ & L ≥ R - \xi ∧ L ≤ R + \xi \\
+L ≥ R & ~~ \mapsto ~~ & L ≥ R - \xi \\
+L > R & ~~ \mapsto ~~ & L > R - \xi \\
+\end{eqnarray*}
 
 \paragraph{Changing the labelling.}
+\todo{this paragraph could use a better explanation}
 Due to the similarity of our method to the interpolation of propositional formula we can adapt the labelled interpolation system from D'Silva et.al.~\cite{DBLP:conf/vmcai/DSilvaKPW10} to our framework.
 
 In the labelled interpolation system, it is possible to modify the \textsc{a,b,ab} labelling as long as it preserves \emph{locality}, see \cite{DBLP:conf/vmcai/DSilvaKPW10} for the details.

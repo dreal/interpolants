@@ -1,2 +1,8 @@
 \section{Conclusion}
 \label{sec:concl}
+
+We present an method for computing Craig interpolants for first-order formulas over real numbers with a wide range of nonlinear functions.
+Our method transform proof traces from δ decision procedures into interpolants consisting of disjunctive linear constraints.
+The algorithms are guaranteed to find the interpolants between two formulas $A$ and $B$ whenever $A ∧ B$ is not δ-satisfiable.
+Furthermore, we show how the framework apply to systems of ordinary differential equations.
+We implemented our interpolation algorithm in the \dReal SMT-solver and apply the method to domains such robotic design, and hybrid system verification.  
