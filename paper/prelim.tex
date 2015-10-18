@@ -36,7 +36,7 @@ The boxes, or interval domains, are written as $\vec D$ and $c_i$ denotes the $i
         \State $\vec D \gets \mathrm{Prune}(\vec D, c_i)$
         \EndWhile
         \If{$\vec D \neq \emptyset$}
-            \If{$\exists 1\leq i\leq m, |\sharp c_i(\vec D)|\geq \delta$}
+            \If{$\exists 1\leq i\leq m, |\vec D|\geq \varepsilon$} \Comment{$\varepsilon$ is some computable factor of $\delta$}
                 \State $\{\vec D_1,\vec D_2\} \gets \mathrm{Branch}(\vec D, i)$
                 \State $S.\mathrm{push}(\vec D_1)$
                 \State $S.\mathrm{push}(\vec D_2)$
@@ -48,7 +48,6 @@ The boxes, or interval domains, are written as $\vec D$ and $c_i$ denotes the $i
     \State \Return {\sf unsat}
 \end{algorithmic}
 \end{algorithm}
-\todo[inline]{explain the $\sharp c_i$ in figure}
 
 \begin{example}
 Consider a constraint $c(x,y) : y=x \wedge y = x^2$, and $x\in [1.5,2]$ and
