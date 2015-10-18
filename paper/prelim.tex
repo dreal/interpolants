@@ -78,30 +78,14 @@ In the last step, the algorithm concludes that there is a conflict between the a
 
 \paragraph{Proofs from constraint propagation.}
 
-The complete theory behind proof extraction from $\delta$-decision procedure is available in~\cite{DBLP:conf/synasc/GaoKC14}.
-Here, we described a simplified version.
-The proof is divides the solution space until it can prove, using interval arithmetic, that each small piece of the solution space is empty.
-The solver uses constraints propagation and pruning steps to limit the amount of branching required.
-However, the proof it produces only need to consider two main rules: splitting and theory lemma.
-The rules are shown in Figure~\ref{fig:rules}.
-The \splt rules divides the solution space into two disjoint subspaces.
-The theory lemmas (\thLem) are the leaves of the proof.
-They occurs when the solver managed to prove the absence of solution in a given subspace.
-The interval constraints propagation algorithms works on one constraint at the time. 
-The \weaken rule extracts those conjunct out of the main formula.
-
-Each step of the proof has a set of variables $\vec x$ with a domain $\vec D$ and $F$ is a formula.
-We use of vectors in the formulas, writing $\vec x ∈ \vec D$ to denote $\bigwedge_i x_i ∈ D_i$.
-The domains are intervals, i.e., each $D_i$ has the form $[l_i,u_i]$ where $l_i$,$u_i$ are the lower and upper bounds for $x_i$.
-Since we are looking at unsatisfiability proofs, each node implies $⊥$.
-
-The root of the proof is has formula $A ∧ B$ and $D$ covers the entire domain,
-the inner nodes are \splt.
-and the proof's leaves are theory lemmas directly followed by a weakening.
-
-\begin{notation}
-In the proof rules, we use the standard notations for sequent calulus. Also, when we write an interval $[a,b]$, we always assume that it is a well-defined real interval satisfying $a\leq b$. 
-\end{notation}
+A detailed description of proof extraction from $\delta$-decision procedure is available in~\cite{DBLP:conf/synasc/GaoKC14}.
+Here, we use a simplified version. Intuitively, the proof of unsatisfiability recursively divides the solution space to small pieces, until it can prove (mostly using interval arithmetic) that every small piece of the domain contains no solution of the original system. Note that in such a proof, the difference between pruning and branching operations become blurred for the following reason. Pruning operations show that one part of the domain can be discarded because no solution can exist there. Branching operations split the domain along one variable, and generates two sub-problems. From a proof perspective, the difference between the two kinds of operations is simply whether the emptiness in one part of domain follows from a simple properties of the functions (theory lemma), or requires further derivations. Indeed, as is shown in~\cite{DBLP:conf/synasc/GaoKC14}, the simple proof system in Figure~\ref{fig:rules} is enough for establishing all theorems that can be obtained by $\delta$-decision procedures. The rules can be explained as follows. 
+\begin{itemize}
+\item The \splt rules divides the solution space into two disjoint subspaces.
+\item The theory lemmas (\thLem) are the leaves of the proof. They are used when the solver managed to prove the absence of solution in a given subspace.
+\item The \weaken rule extracts those conjunct out of the main formula.
+\end{itemize}
+We see that each step of the proof has a set of variables $\vec x$ with a domain $\vec D$ and $F$ is a formula. We use of vectors in the formulas, writing $\vec x ∈ \vec D$ to denote $\bigwedge_i x_i ∈ D_i$. The domains are intervals, i.e., each $D_i$ has the form $[l_i,u_i]$ where $l_i$,$u_i$ are the lower and upper bounds for $x_i$. Since we are looking at unsatisfiability proofs, each node implies $⊥$. The root of the proof is has formula $A ∧ B$ and $D$ covers the entire domain, the inner nodes are \splt, and the proof's leaves are theory lemmas directly followed by weakening. To avoid duplication we do not give a seperate example here, since the full example in Figure~\ref{fig:proof} shows the structure of some proof trees obtained from such rules. 
 
 \begin{figure}
 \centering
@@ -124,7 +108,8 @@ In the proof rules, we use the standard notations for sequent calulus. Also, whe
   x_i\in [l_i, u_i] \wedge \bigwedge_{j\neq i} x_j∈ D_j ∧ C \entails ⊥
 }{(\splt)}
 \end{mathpar}
-\caption{Proof rules for the ICP algorithm}
+\caption{Proof rules for the ICP algorithm. We use the standard notations for sequent calulus. Also, when we write an interval $[a,b]$, we always assume that it is a well-defined real interval satisfying $a\leq b$. 
+}
 \label{fig:rules}
 \end{figure}
 

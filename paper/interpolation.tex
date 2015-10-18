@@ -1,10 +1,9 @@
 \section{Interpolants in Nonlinear Theories}
 \label{sec:itp}
 
-Our method for constructing a disjunctive linear interpolants takes as input a proof tree and a labelling functions.
-Let $l$ be the labelling function that maps formula and variables to \textsc{a},\textsc{b}, or \textsc{ab}.
-For each proof rule we associate an partial interpolant, written in square bracket on the right of the conclusion of the rule.
-Figure~\ref{fig:rulesI} shows the modified rules.
+Intuitively, a proof of unsatisfiability is a partition of the solution space where each sub-domain is associated with a conjunct $c$ from $A ∧ B$.
+$c$ is a witness that shows the absence of solution in a given domain.
+The interpolation rules traverse the rules and selects which parts belong to the interpolant $I$. We now describe the algorithm for obtaining such interpolants for formulas $A$ and $B$ from the proof of unsatisfiability for $A\wedge B$. 
 
 % need a labelling function
 % ThLem: A → false 
@@ -48,17 +47,17 @@ where $ite(x,y,z)$ is a shorthand for $(x ∧ y)∨(¬x ∧ z)$
 \label{fig:rulesI}
 \end{figure}
 
-
-Intuitively, a proof of unsatisfiability is a partition of the solution space where each sub-domain is associated with a conjunct $c$ from $A ∧ B$.
-$c$ is a witness that shows the absence of solution in a given domain.
-The interpolation rules traverse the rules and selects which parts belong to the interpolant $I$.
-
-At the leaf level (rule \thLemI), the tile is in $I$ if $c$ is not part of $A$, i.e., the contradiction originates from $B$.
+Our method for constructing disjunctive linear interpolants takes two inputs: a proof tree and a labeling function. The labeling function maps formula and variables to either \textsc{a}, \textsc{b}, or \textsc{ab}.
+For each proof rule introduced in Figure~\ref{fig:rules}, we associate some partial interpolants, written in square bracket on the right of the conclusion of the rule. 
+Figure~\ref{fig:rulesI} shows these modified versions of the rules.
+\begin{itemize}
+\item At the leaf level (rule \thLemI), the tile is in $I$ if $c$ is not part of $A$, i.e., the contradiction originates from $B$.
 If $c$ is in both $A$ and $B$ then it can be considered as either part of $A$ or $B$.
 Both cases lead to a correct interpolant.
-The \weakenI rule does not influence the interpolant, it is only required to pick $c$ from $A ∧ B$.
 
-The \spltI is the most interesting rule.
+\item The \weakenI rule does not influence the interpolant, it is only required to pick $c$ from $A ∧ B$.
+
+\item The \spltI is the most interesting rule.
 Splitting the domain essentially defines the bounds of the subsequent domains.
 Let $x$ be the variable whose domain is split at value $p$ and $I₁$, $I₂$ be the two interpolants for the case when $x < p$ and $x ≥ p$.
 If $x$ occurs in $A$ but not $B$, then $x$ cannot occur in $I$.
@@ -66,7 +65,7 @@ Since $x$ is in $A$ then we know that $A$ implies $x < p ⇒ I₁$ and $x ≥ p 
 Eliminating $x$ gives $I = I₁ ∨ I₂$.
 A similar reasoning applies when $x$ occurs in $B$ but not $A$ and gives $I = I₁ ∧ I₂$.
 When $x$ occurs in both $A$ and $B$ then $x$ is kept in $I$ and acts as a selector for the values of $x$ smaller than $p$ $I₁$ is selected, otherwise $I₂$ applies.
-
+\end{itemize}
 The correctness of our method is shown by the following theorem:
 \begin{theorem}
 The rules \spltI, \thLemI, \weakenI generate a Craig interpolant $I$ from the proof of unsatisfiability of $A$ and $B$.
