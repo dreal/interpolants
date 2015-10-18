@@ -137,7 +137,6 @@ For each $D'_i=[l',u']$ which is strictly smaller than $D_i=[l,u]$, the \splt an
 If $u'<u$ then we split on $u'$ and a lemma shows that the interval $[u,u']$ has no solution.
 The same is done for the lower bounds $l'$,$l$.
 Figure~\ref{fig:prune} shows a pruning step and the corresponding proof.
-\todo{say some more about the left side of the split in the figure, add a better caption to the figure}
 
 \begin{figure}
 \centering
@@ -166,6 +165,12 @@ Figure~\ref{fig:prune} shows a pruning step and the corresponding proof.
 \end{minipage}
 };
 \end{tikzpicture}
-\caption{Pruning operation and the corresponding proof}
+\caption{
+    Pruning operation and the corresponding proof.
+    The pruning shrinks the domain of $x$ from $[l,u]$ to $[l,u']$.
+    The corresponding proof starts with a \splt around $u'$.
+    The interval $[u',u]$ is proved empty using a \thLem and \weaken step.
+    The remaining $[l,u']$ interval is shown empty by further operations.
+}
 \label{fig:prune}
 \end{figure}
