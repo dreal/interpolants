@@ -49,32 +49,32 @@ The boxes, or interval domains, are written as $\vec D$ and $c_i$ denotes the $i
 \end{algorithmic}
 \end{algorithm}
 
-\begin{example}
-Consider a constraint $c(x,y) : y=x \wedge y = x^2$, and $x\in [1.5,2]$ and
-$y\in [1,2]$ are the initial interval assignment. We use the abstract-DPLL style notation $\vec x\in \vec D||c$ to denote the pair of the sequence of interval assignments. (For more details, see~\cite{DBLP:conf/synasc/GaoKC13}.) A run of the ICP algorithm on this problem is as follows:
-\begin{eqnarray*}
-& &x\in [1.5,2], y\in [1,2]\parallel c \\
-&\stackrel{branch}{\Longrightarrow}& x\in [1.5,2],
-y\in [1,2], (x\in [1.7, 2])^d\parallel c\\
-& &\mbox{  (branching on the x variable, looking only at the part $x\in[1.7,2]$)}\\
-&\stackrel{backtrack}{\Longrightarrow}& x\in [1.5,2], y\in [1,2], x\in [1.5, 1.7]\parallel c\\
-& &\mbox{  (backtracking, since $\forall\vec a\in [1.7,2]\times [1,2]$,
-$c(\vec a)$ is false,}\\
-& & \hspace{4cm} \mbox{and $[1.5,2]\subseteq[1.5,1.7]\cup [1.5, 2]$ for
-$x$)}\\
-&\stackrel{prune}{\Longrightarrow}& x\in [1.5,2], y\in [1,2], x\in [1.5, 1.7], x\in
-[1.5, 1.6]\parallel c\\
-& & \mbox{  (pruning, since $\forall \vec a\in[1.6,1.7]\times [1, 2]$, $c(\vec
-a)$ is false)}\\
-&\stackrel{prune}{\Longrightarrow}& x\in [1.5,2], y\in [1,2], x\in [1.5, 1.7],x\in [1.5, 1.6], x\in \emptyset\parallel c\\
-& & \mbox{  (pruning, since $\forall \vec a\in[1.5,1.6]\times [1, 2]$, $c(\vec
-a)$
-is false)}\\
-&\stackrel{fail}{\Longrightarrow}& \emptyset||c\ \mbox{ (since
-$\forall \vec a\in \emptyset \times [1, 2], c(\vec a)$ is false.)}
-\end{eqnarray*}
-In the last step, the algorithm concludes that there is a conflict between the assignment sequence and the constraint, because $x\in \emptyset$ has been derived. 
-\end{example}
+%   \begin{example}
+%   Consider a constraint $c(x,y) : y=x \wedge y = x^2$, and $x\in [1.5,2]$ and
+%   $y\in [1,2]$ are the initial interval assignment. We use the abstract-DPLL style notation $\vec x\in \vec D||c$ to denote the pair of the sequence of interval assignments. (For more details, see~\cite{DBLP:conf/synasc/GaoKC13}.) A run of the ICP algorithm on this problem is as follows:
+%   \begin{eqnarray*}
+%   & &x\in [1.5,2], y\in [1,2]\parallel c \\
+%   &\stackrel{branch}{\Longrightarrow}& x\in [1.5,2],
+%   y\in [1,2], (x\in [1.7, 2])^d\parallel c\\
+%   & &\mbox{  (branching on the x variable, looking only at the part $x\in[1.7,2]$)}\\
+%   &\stackrel{backtrack}{\Longrightarrow}& x\in [1.5,2], y\in [1,2], x\in [1.5, 1.7]\parallel c\\
+%   & &\mbox{  (backtracking, since $\forall\vec a\in [1.7,2]\times [1,2]$,
+%   $c(\vec a)$ is false,}\\
+%   & & \hspace{4cm} \mbox{and $[1.5,2]\subseteq[1.5,1.7]\cup [1.5, 2]$ for
+%   $x$)}\\
+%   &\stackrel{prune}{\Longrightarrow}& x\in [1.5,2], y\in [1,2], x\in [1.5, 1.7], x\in
+%   [1.5, 1.6]\parallel c\\
+%   & & \mbox{  (pruning, since $\forall \vec a\in[1.6,1.7]\times [1, 2]$, $c(\vec
+%   a)$ is false)}\\
+%   &\stackrel{prune}{\Longrightarrow}& x\in [1.5,2], y\in [1,2], x\in [1.5, 1.7],x\in [1.5, 1.6], x\in \emptyset\parallel c\\
+%   & & \mbox{  (pruning, since $\forall \vec a\in[1.5,1.6]\times [1, 2]$, $c(\vec
+%   a)$
+%   is false)}\\
+%   &\stackrel{fail}{\Longrightarrow}& \emptyset||c\ \mbox{ (since
+%   $\forall \vec a\in \emptyset \times [1, 2], c(\vec a)$ is false.)}
+%   \end{eqnarray*}
+%   In the last step, the algorithm concludes that there is a conflict between the assignment sequence and the constraint, because $x\in \emptyset$ has been derived. 
+%   \end{example}
 
 \paragraph{Proofs from constraint propagation.}
 
