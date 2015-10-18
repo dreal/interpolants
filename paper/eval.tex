@@ -9,17 +9,17 @@ We modified the ICP loop and the contractors which are responsible for the pruni
 
 \paragraph{Interpolant sizes.}
 The ICP algorithm implemented in \dReal eagerly prunes the domain by applying repeatedly \emph{all} the constraints.
-Therefore, it usually generate large proofs often involving all the constraints and all the variables.
+Therefore, it usually generates large proofs often involving all the constraints and all the variables.
 Interpolation can extract more precise information from the proof.
 Intuitively, an interpolant which is much smaller than the proof are more likely to be useful in practice.
-In this test, we try to compare the size of the proof against the size of the interpolants using benchmark from the Flyspeck project~\cite{2015arXiv150102155H}, certificate for Lyapunov functions in powertrain control systems~\cite{DBLP:conf/hybrid/KapinskiDSA14} and the other examples presented in the rest of this Section.
+In this test, we try to compare the size of the proof against the size of the interpolants using benchmark from the Flyspeck project~\cite{2015arXiv150102155H}, certificates for Lyapunov functions in powertrain control systems~\cite{DBLP:conf/hybrid/KapinskiDSA14} and the other examples presented in the rest of this section.
 
 %The Flyspeck project has built a mechanized proof of the Kepler conjecture.
 %Part of the proof requires showing the unsatisfiability of nonlinear formulas.
 %In previous work~\cite{DBLP:conf/synasc/GaoKC14}, part of these formulas were translated to the input format of \dReal.
 %\todo[inline]{Toyota}
 
-We run \dReal, with a 15 minute timeout, and generate 1063 interpolants.
+We run \dReal with a 20 minutes timeout and generate 1063 interpolants.
 Out of these, 501 are nontrivial.
 In Figure~\ref{fig:flyspeck} we plot the number of inequalities in the nontrivial interpolants against the size of the proof without the \weaken steps.
 For similar proofs, we see that the interpolants can be order of magnitude simpler than the proofs and other interpolants obtained by different partitions of the formula.
@@ -111,7 +111,10 @@ Therefore, the formula we build has no solution and we get an interpolant $I(\ve
 \begin{subfigure}{0.45\textwidth}
   \centering
   \includegraphics[scale=1.5]{img/ode.pdf}
-  \caption{ Interpolant for system of nonlinear ODEs } %TODO ref to formula
+  \caption{ Interpolant for system of nonlinear ODEs. 
+            The black and red curves are the trajectories described by $A$ and $B$.
+            The green area is the interpolant.
+            }
   \label{fig:ode}
 \end{subfigure}
 \hfill
