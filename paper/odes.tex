@@ -9,7 +9,6 @@ which is satisfiable when the system defined by the vector field $\vec g$ can ha
 In the $\delta$-decision framework, we perform interval-based integration for ODE constraints that satisfies the following. Suppose the time domain for the ODE constraint in question is in $[t_0,T]$. Let $t_0\leq t_1\leq \cdots t_m\leq T$ be a sequence of time points. An interval-based integration algorithms compute boxes $D_{t_1},...,D_{t_m}$ such that 
 $$\forall i\in \{1,...,m\},\; \{\vec x(t): t_i\leq t\leq t_{i+1}, \vec x_0\in D_{\vec x_0}\}\subseteq D_{t_0}.$$
 Namely, it computes a sequence of boxes such that all possible trajectories are containted in them over time. Thus, the ODE constraints can be handled in the same way as non-ODE constraints, whose solution set is covered by a set of small boxes. Consequently, the proof rules from Figure~\ref{} apply directly to ODE constraints. 
-\todo[inline]{more}
 
 
 
