@@ -20,7 +20,7 @@ Figure~\ref{fig:rulesI} shows the modified rules.
 \centering
 \begin{mathpar}
 \inferrule{ {} }{
-  \vec x ∈ \vec D ∧ c \entails ⊥ \quad [l(f) ≠ \textsc{a}]
+  \vec x ∈ \vec D ∧ c \entails ⊥ \quad [l(c) ≠ \textsc{a}]
 }{(\thLemI)}\\
 
 \inferrule{
@@ -49,22 +49,22 @@ where $ite(x,y,z)$ is a shorthand for $(x ∧ y)∨(¬x ∧ z)$
 \end{figure}
 
 
-Intuitively, a proof of unsatisfiability is a tiling of the solution space where each tile is associated with a conjunct $c$ from $A ∧ B$.
-$c$ is a witness that shows the absence of solution in a given tile.
-The interpolation rules traverse the rules and selects which tiles belong to the interpolant $I$.
+Intuitively, a proof of unsatisfiability is a partition of the solution space where each sub-domain is associated with a conjunct $c$ from $A ∧ B$.
+$c$ is a witness that shows the absence of solution in a given domain.
+The interpolation rules traverse the rules and selects which parts belong to the interpolant $I$.
 
 At the leaf level (rule \thLemI), the tile is in $I$ if $c$ is not part of $A$, i.e., the contradiction originates from $B$.
 If $c$ is in both $A$ and $B$ then it can be considered as either part of $A$ or $B$.
-Both cases leads to a correct interpolant.
+Both cases lead to a correct interpolant.
 The \weakenI rule does not influence the interpolant, it is only required to pick $c$ from $A ∧ B$.
 
 The \spltI is the most interesting rule.
-Splitting the domains essentially defined the bounds of the subsequent tiles.
+Splitting the domain essentially defines the bounds of the subsequent domains.
 Let $x$ be the variable whose domain is split at value $p$ and $I₁$, $I₂$ be the two interpolants for the case when $x < p$ and $x ≥ p$.
 If $x$ occurs in $A$ but not $B$, then $x$ cannot occur in $I$.
 Since $x$ is in $A$ then we know that $A$ implies $x < p ⇒ I₁$ and $x ≥ p ⇒ I₂$.
-Eliminating $x$ give $I = I₁ ∨ I₂$.
-A similar reasoning is applicable when $x$ occurs in $B$ but not $A$ and gives $I = I₁ ∧ I₂$.
+Eliminating $x$ gives $I = I₁ ∨ I₂$.
+A similar reasoning applies when $x$ occurs in $B$ but not $A$ and gives $I = I₁ ∧ I₂$.
 When $x$ occurs in both $A$ and $B$ then $x$ is kept in $I$ and acts as a selector for the values of $x$ smaller than $p$ $I₁$ is selected, otherwise $I₂$ applies.
 
 The correctness of our method is shown by the following theorem:
@@ -77,23 +77,23 @@ The rules \spltI, \thLemI, \weakenI generate a Craig interpolant $I$ from the pr
 We prove correctness of the rules by induction.
 To express the inductive invariant, we split the domain $\vec D$ into the domains $\vec D_A$ and $\vec D_B$ which contains only the intervals of the variables occuring in $A$, $B$ respectively.
 
-At any given point in the proof, at any given point in the proof the partial interpolant $I$ is an interpolant for the formula $A$ over $\vec D_A$ and $B$ over $\vec D_B$.
+At any given point in the proof, the partial interpolant $I$ is an interpolant for the formula $A$ over $\vec D_A$ and $B$ over $\vec D_B$.
 At the root of the proof tree we get an interpolant for the whole domain $\vec D = \vec D_A ∧ \vec D_B$.
 
-At the leaves of the proof, or the \thLemI rule, one of the constrain has no solution over the domain.
+At the leaves of the proof, or the \thLemI rule, one of the constraints has no solution over the domain.
 Let's assume that this constraint comes from $A$.
 Then the partial interpolant $I$ is $⊥$.
 We have that $A ∧ \vec D_A ⇒ I$ by the semantics of the \thLem rule ($⊥⇒⊥$).
 Trivially, $B ∧ \vec D_B ∧ I ⇒ ⊥$ and $fv(I) = ∅ ⊆ fv(A) ∩ fv(B)$.
-When the contradiction comes from $B$, a similar reasoning is applied with $I=⊤$.
+When the contradiction comes from $B$, a similar reasoning applies with $I=⊤$.
 
-The \weakenI only serves to select which constraint cause the contradiction and does not changed the invariant.
+The \weakenI only serves to select the constraint which causes the contradiction and does not change the invariant.
 
 The \spltI rule is the most complex case.
 We have to consider whether the variable $x$ which is split come from $A$, $B$, or is shared.
 For instance, if $x∈ fv(A)$ then the induction step has $\vec D_{A1} = \vec D_A ∧ x < p$ and $\vec D_{A2} = \vec D_A ∧ x ≥ p$ and $\vec D_B$ is unchanged.
-if $x ∈ fv(B)$ then $\vec D_B$ is affected and $\vec D_A$ is unchanged.
-if $x$ is shared then both $\vec D_A$ and $\vec D_B$ are affected.
+If $x ∈ fv(B)$ then $\vec D_B$ is affected and $\vec D_A$ is unchanged.
+If $x$ is shared then both $\vec D_A$ and $\vec D_B$ are affected.
 
 Let consider that $x ∈ fv(A)$ and $x ∉ fv(B)$.
 We omit the case where $x$ is in $B$ but not $A$ as it is similar.
@@ -235,7 +235,7 @@ To handle disjunctions, our method can be combined with the method presented by 
 %When using interpolation as an heuristic to accelerate fixed point computation for verification,
 For any two formulas $A$,$B$ which conjunction is unsatisfiable, the interpolant $I$ is not unique.
 In practice, it is difficult to know a priori what is a good interpolant.
-Therefore, it is desirable to have the possibility of generating and trying multiple interpolants.
+Therefore, it is desirable to have the possibility of generating and testing multiple interpolants.
 We now explain how to get multiple interpolant of different logical strength.
 
 \paragraph{Parameterizing interpolation strength.}
@@ -247,8 +247,7 @@ However, these formulas might still be δ-satisfiable.
 To obtain an interpolant such that both $A ∧ ¬I$ and $B ∧ I$ are δ-unsatisfiable, we can weaken both $A$ and $B$ by a factor δ.
 However, $A$ and $B$ must be at least $3δ$-unsatisfiable to guarantee that the solver finds a proof of unsatisfiability.
 Furthermore, we can also introduce perturbations only on one side in other to make the interpolant stronger of weaker.
-
-To introduce a perturbation $\xi$, we apply the following rewriting to every inequalities in $A$ and/or $B$:
+To introduce a perturbation $\xi$, we apply the following rewriting to every inequalities in $A$ and/or $B$: \todo{δ vs $\xi$}
 \begin{eqnarray*}
 L = R & ~~ \mapsto ~~ & L ≥ R - \xi ∧ L ≤ R + \xi \\
 L ≥ R & ~~ \mapsto ~~ & L ≥ R - \xi \\
@@ -257,8 +256,9 @@ L > R & ~~ \mapsto ~~ & L > R - \xi \\
 
 \paragraph{Changing the labelling.}
 \todo{this paragraph could use a better explanation}
-Due to the similarity of our method to the interpolation of propositional formula we can adapt the labelled interpolation system from D'Silva et.al.~\cite{DBLP:conf/vmcai/DSilvaKPW10} to our framework.
+Due to the similarity of our method to the interpolation of propositional formulas we can adapt the labelled interpolation system from D'Silva et.al.~\cite{DBLP:conf/vmcai/DSilvaKPW10} to our framework.
 
 In the labelled interpolation system, it is possible to modify the \textsc{a,b,ab} labelling as long as it preserves \emph{locality}, see \cite{DBLP:conf/vmcai/DSilvaKPW10} for the details.
-A further restriction in our case is that we cannot use projections of constraint at the proof's leaves as the projection is not computable in nonlinear theories.
-Therefore, the labelling must still enforce that the leaves maps to the partial interpolants ⊤ or ⊥.
+An additional restriction in our case is that we cannot use a projection of constraints at the proof's leaves.
+The projection is not computable in nonlinear theories.
+Therefore, the labelling must enforce that the leaves maps to the partial interpolants ⊤ or ⊥.
