@@ -1,25 +1,3 @@
 \section{Related Work and Future Work}
 \label{sec:related}
 
-Propositional interpolation was studied by Pudl{\'a}k~\cite{MR1472134}.
-Our algorithm is very similar, however, it applies to a very different theory.
-
-Craig interpolation for real or integer arithmetic has focused on the 
-linear fragment with LA(ℝ)~\cite{DBLP:conf/tacas/McMillan04,DBLP:conf/vmcai/RybalchenkoS07} and LA(ℤ)~\cite{DBLP:conf/cade/BrilloutKRW10,DBLP:conf/tacas/GriggioLS11}.
-Our method currently handles nonlinear fragments over ℝ.
-
-Existing tools to compute interpolation such as
-\mathsat~\cite{mathsat5},
-\princess~\cite{DBLP:conf/cade/BrilloutKRW10},
-\smtinterpol~\cite{DBLP:conf/spin/ChristHN12}, and
-\zthree~\cite{DBLP:conf/fmcad/McMillan11}
-focus on linear arithmetic.
-We are the first to provide interpolant in nonlinear theories.
-
-In the future, we plan to expand our work to richer proof systems.
-The ICP loop produces proof based on interval pruning which results in large, ``squarish'' interpolants.
-Using more general proof systems, e.g. cutting planes, we will be able to get smaller, smoother interpolants.
-CDCL-style reasoning for richer theories, e.g., LA(ℝ)~\cite{DBLP:conf/cav/McMillanKS09} and polynomial~\cite{DBLP:conf/cade/JovanovicM12}, is a likely basis for such extensions.
-Furthermore, we are interested in investigating the link between classical interpolation and Craig interpolation over the reals.
-Using methods like spline interpolation and radial basis functions, it maybe possible to build smoother interpolants.
-%We also to extend the our rules to compute interpolants mixed proofs with both integer and real variables.

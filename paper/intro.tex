@@ -53,12 +53,26 @@ $I$ is $y ≥ 0 ∧ (0.26 ≤ y ∨ (y ≤ 0.26 ∧ -0.51 ≤ x ≤ 0.51))$.
 
 We have implemented the algorithms in the SMT solver \dReal~\cite{DBLP:conf/cade/GaoKC13}. We show examples of applications from various domains such as control and robotic design, and hybrid system verification.  
 
-% Outline of the paper
+\paragraph{Related work.}
+Our algorithm is surprisingly similar to the algorithm for propositional interpolation studied by Pudl{\'a}k~\cite{MR1472134}.
+However, it applies to a different theory.
+Craig interpolation for real or integer arithmetic has focused on the linear fragment with LA(ℝ)~\cite{DBLP:conf/tacas/McMillan04,DBLP:conf/vmcai/RybalchenkoS07} and LA(ℤ)~\cite{DBLP:conf/cade/BrilloutKRW10,DBLP:conf/tacas/GriggioLS11}.
+Our method currently handles nonlinear fragments over ℝ.
+
+Existing tools to compute interpolation such as
+\mathsat~\cite{mathsat5},
+\princess~\cite{DBLP:conf/cade/BrilloutKRW10},
+\smtinterpol~\cite{DBLP:conf/spin/ChristHN12}, and
+\zthree~\cite{DBLP:conf/fmcad/McMillan11}
+focus on linear arithmetic.
+We are the first to provide interpolant in nonlinear theories.
+
+
+\paragraph{Outline.}
 In Section~\ref{sec:prelim}, we review notions related to interpolation, nonlinear arithmetic over the Reals and δ-decision procedures.
 In Section~\ref{sec:itp}, we introduce our interpolation algorithm.
 In Section~\ref{sec:eval}, we present and evaluate our implementation.
-We review the related work and sketch future research direction in Section~\ref{sec:related}.
-Finally, we conclude in Section~\ref{sec:concl}.
+Finally, we conclude and sketch future research direction in Section~\ref{sec:concl}.
 
 %Given two formulas which conjunction is unsatisfiable, the Craig interpolant~\cite{MR0104564} is a formula over the common variables that serves
 

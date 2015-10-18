@@ -49,8 +49,35 @@ airplane control~\cite{Bae201513},
 bouncing balls, networked water tanks,
 models of cardiac cells~\cite{DBLP:conf/cmsb/LiuKGZC14},
 verification of the trajectory planning and tracking stacks of autonomous vehicle (in particular, for lane change maneuver~\cite{althoff2014online}),
-etc.
+and example from \dReal regression tests.
+Table~\ref{tbl:ode} shows statistics about the interplants for each family of examples.
 % apex_0_0_unsat
+
+\begin{table}
+\centering
+\begin{tabular}{l|cccrrr}
+Family            & \#tests    & ~\#flow &  ~\#var  & proof size      & ~interplant size & time \\
+\hline
+Airplane control  &       53   &  [1,4] & [56,61] & [4213,24249]    &  [70,10260]     &   [57s,178s]  \\
+Apex              &       17   &   1    &  44     &          23     &  [0,22]         &    [5s,9s]    \\
+Bouncing ball     &      165   &   2    &  128    &         857     &  [0,28]         &  [1.6s,5.5s]  \\
+Cardiac cells     &       37   &   4    &  71     &          15     &  [0,1]          & ~[15m,20m]    \\
+Water tanks       &       68   &  [4,8] & [18,30] & [6530,225099]   &  [331,92594]    &  [7s,12m]     \\
+Lane change       &       15   &   1    &  44     &          24     &  [0,23]         &   [19s,20s]   \\
+Other tests       &      142   &   1    &  5      &           2     &  [0,1]          &  [0.1s,1s]   
+\end{tabular}
+
+\vspace{1ex}
+
+\caption{
+    Results for the interpolation of ODEs.
+    The [\_,\_] notation stands for intervals that cover the values for the whole families of examples.
+    The first column indicates the family.
+    The next three columns contains the number of tests in the family, the number of flows and variables in the tests.
+    The last three columns shows the size of the proofs, interpolants, and the solving time.
+}
+\label{tbl:ode}
+\end{table}
 
 \paragraph{Robotic design.}
 Often, hybrid system verification is used in model-based design.
@@ -92,7 +119,7 @@ Therefore, the formula we build has no solution and we get an interpolant $I(\ve
   \centering
   \includegraphics[scale=1]{img/arm.pdf}
   \caption{
-    Model of a 1-DOF robotic manipulator composed of tw0 100mm long segments.
+    Model of a 1-DOF robotic manipulator composed of two 100mm long segments.
     The black line shows the effector's reach and the green cubes are the approximation obtained by interpolation where ε is 10mm.
   }
   \label{fig:robot}
