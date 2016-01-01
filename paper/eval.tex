@@ -1,11 +1,12 @@
 \section{Applications and Evaluation}
 \label{sec:eval}
 
-We have implemented the interpolation algorithm in a modified version of the \dReal SMT solver which is currently available at \url{https://github.com/dzufferey/dreal3/}\footnote{Once the implementation is stable, the interpolation will be merged into the main repository of \dReal}.
+We have implemented the interpolation algorithm in a modified version of the \dReal SMT solver which is currently available at \url{https://github.com/dzufferey/dreal3/}. %\footnote{Once the implementation is stable, the interpolation will be merged into the main repository of \dReal}.
 The proofs produced by \dReal can be very large, i.e., gigabytes.
 Therefore, the interpolants are built and simplified on-the-fly.
 The full proof is not kept in memory.
 We modified the ICP loop and the contractors which are responsible for the pruning steps.
+The overhead induced by the interpolant generation over the solving time is smaller than 10\%.
 
 \paragraph{Interpolant sizes.}
 The ICP algorithm implemented in \dReal eagerly prunes the domain by applying repeatedly \emph{all} the constraints.

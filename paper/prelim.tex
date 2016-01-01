@@ -116,7 +116,7 @@ We see that each step of the proof has a set of variables $\vec x$ with a domain
 Algorithm~\ref{icpalgo} generates proof during the \emph{branching} and \emph{pruning} operations.
 Branching directly corresponds to the $\splt$ rule.
 Pruning, on the other hand, is a combination of the three rules.
-Let us look at $\vec D' = \text{Pruning}(\vec D, c_i)$.
+Let us look at $\vec D' = \text{Prune}(\vec D, c_i)$.
 The constraint $c_i$ is selected with the \weaken.
 For each $D'_i=[l',u']$ which is strictly smaller than $D_i=[l,u]$, the \splt and \thLem rules are applied.
 If $u'<u$ then we split on $u'$ and a lemma shows that the interval $[u,u']$ has no solution.
