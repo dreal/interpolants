@@ -32,12 +32,12 @@ The boxes, or interval domains, are written as $\vec D$ and $c_i$ denotes the $i
     \State $S \gets \vec D$
     \While{$S \neq \emptyset$}
         \State $\vec D \gets S.\mathrm{pop}()$
-        \While{$\exists 1 \leq i \leq m, \vec D \neq_{\delta} \mathrm{Prune}(\vec D,c_i)$}
-        \State $\vec D \gets \mathrm{Prune}(\vec D, c_i)$
+        \While{$\exists 1 \leq i \leq m, \vec D \neq_{\delta} \mathrm{Prune}(\vec D,c_i)$} \label{code:prune1}
+        \State $\vec D \gets \mathrm{Prune}(\vec D, c_i)$ \label{code:prune2}
         \EndWhile
         \If{$\vec D \neq \emptyset$}
             \If{$\exists 1\leq i\leq m, |\vec D|\geq \varepsilon$} \Comment{$\varepsilon$ is some computable factor of $\delta$}
-                \State $\{\vec D_1,\vec D_2\} \gets \mathrm{Branch}(\vec D, i)$
+                \State $\{\vec D_1,\vec D_2\} \gets \mathrm{Branch}(\vec D, i)$ \label{code:branch}
                 \State $S.\mathrm{push}(\vec D_1)$
                 \State $S.\mathrm{push}(\vec D_2)$
             \Else

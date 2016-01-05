@@ -8,6 +8,14 @@ The full proof is not kept in memory.
 We modified the ICP loop and the contractors which are responsible for the pruning steps.
 The overhead induced by the interpolant generation over the solving time is smaller than 10\%.
 
+The ICP loop (Figure~\ref{icpalgo}) builds a proof starting from the root of the proof tree and exploring the tree like a depth-first search.
+On the other hand, the interpolation rules build the interpolant starting from the proof's leaves.
+Our implementation modifies the ICP loop to keep a stack $P$ of partial interpolants alongside the stack of branching points $S$.
+When branching (line~\ref{code:branch}), the value used to split $\vec D_1$ and $\vec D_2$ is pushed on $P$.
+The pruning steps (line~\ref{code:prune2}) are converted to a proof as shown in Figure~\ref{fig:prune}.
+When a contradiction is found (line~\ref{code:prune1}), $P$ is popped to the branching point where the search resumes and the corresponding partial interpolant is pushed back on $P$.
+When the ICP loop ends, $P$ contains the final interpolant.
+
 \paragraph{Interpolant sizes.}
 The ICP algorithm implemented in \dReal eagerly prunes the domain by applying repeatedly \emph{all} the constraints.
 Therefore, it usually generates large proofs often involving all the constraints and all the variables.

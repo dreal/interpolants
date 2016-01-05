@@ -115,7 +115,7 @@ which simplifies to
 
 Finally, we need to consider $x ∈ fv(A)$ and $x ∈ fv(B)$.
 The induction hypothesis is\\
-\parbox{0.38\linewidth}{
+\parbox{0.37\linewidth}{
 \begin{eqnarray*}
 & A ∧ (\vec D_A ∧ x < p) ⇒ I₁ \\
 & A ∧ (\vec D_A ∧ x ≥ p) ⇒ I₂ \\
@@ -123,8 +123,8 @@ The induction hypothesis is\\
 & B ∧ (\vec D_B ∧ x ≥ p) ∧ I₂ ⇒ ⊥
 \end{eqnarray*}
 }
-which simplifies to
-\parbox{0.42\linewidth}{
+and simplifies to
+\parbox{0.41\linewidth}{
 \begin{eqnarray*}
 & A ∧ \vec D_A ⇒ ite(x < p, I₁, I₂)\\
 & B ∧ \vec D_B ∧ ite(x < p, I₁, I₂) ⇒ ⊥
