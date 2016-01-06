@@ -36,7 +36,7 @@ The boxes, or interval domains, are written as $\vec D$ and $c_i$ denotes the $i
         \While{$\exists 1 \leq i \leq m, \vec D \neq_{\delta} \mathrm{Prune}(\vec D,c_i)$} \label{code:prune1}
         \State $\vec D \gets \mathrm{Prune}(\vec D, c_i)$ \label{code:prune2}
         \EndWhile
-        \If{$\vec D \neq \emptyset$}
+        \If{$\vec D \neq \emptyset$} \label{code:empty}
             \If{$\exists 1\leq i\leq m, |\vec D|\geq \varepsilon$} \Comment{$\varepsilon$ is some computable factor of $\delta$}
                 \State $\{\vec D_1,\vec D_2\} \gets \mathrm{Branch}(\vec D, i)$ \label{code:branch}
                 \State $S.\mathrm{push}(\vec D_1)$
@@ -90,7 +90,7 @@ Pruning operations show that one part of the domain can be discarded because no 
 \end{itemize}
 We see that each step of the proof has a set of variables $\vec x$ with a domain $\vec D$ and $F$ is a formula. We use of vectors in the formulas, writing $\vec x ∈ \vec D$ to denote $\bigwedge_i x_i ∈ D_i$. The domains are intervals, i.e., each $D_i$ has the form $[l_i,u_i]$ where $l_i$,$u_i$ are the lower and upper bounds for $x_i$. Since we are looking at unsatisfiability proofs, each node implies $⊥$. The root of the proof is the formula $A ∧ B$, and $D$ covers the entire domain. The inner nodes are \splt, and the proof's leaves are theory lemmas directly followed by weakening. To avoid duplication, we do not give a separate example here, since the full example in Figure~\ref{fig:proof} shows the structure of some proof trees obtained from such rules. 
 
-\begin{figure}
+\begin{figure}[t]
 \centering
 \begin{mathpar}
 \inferrule{ {} }{
@@ -116,9 +116,11 @@ We see that each step of the proof has a set of variables $\vec x$ with a domain
 \label{fig:rules}
 \end{figure}
 
-Algorithm~\ref{icpalgo} generates proof during the \emph{branching} and \emph{pruning} operations.\todo{Algorithm 1 itself doesn't include the proof generation operations. Need a bit more explanation here?} 
-Branching directly corresponds to the $\splt$ rule.
-Pruning, on the other hand, is a combination of the three rules.
+A proof of unsatisfiability can be extracted from a excution trace of Algorithm~\ref{icpalgo} when it returns \textsf{unsat}.
+The algorithm starts at the root of the proof tree and explore the proof tree depth-first.
+%Algorithm~\ref{icpalgo} generates proof during the \emph{branching} and \emph{pruning} operations. \todo{Algorithm 1 itself doesn't include the proof generation operations. Need a bit more explanation here?} 
+Branching (line~\ref{code:branch}) directly corresponds to the $\splt$ rule.
+Pruning (line~\ref{code:prune2}), on the other hand, is a combination of the three rules.
 Let us look at $\vec D' = \text{Prune}(\vec D, c_i)$.
 The constraint $c_i$ is selected with the \weaken.
 For each $D'_i=[l',u']$ which is strictly smaller than $D_i=[l,u]$, the \splt and \thLem rules are applied.

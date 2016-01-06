@@ -13,7 +13,7 @@ On the other hand, the interpolation rules build the interpolant starting from t
 Our implementation modifies the ICP loop to keep a stack $P$ of partial interpolants alongside the stack of branching points $S$.
 When branching (line~\ref{code:branch}), the value used to split $\vec D_1$ and $\vec D_2$ is pushed on $P$.
 The pruning steps (line~\ref{code:prune2}) are converted to a proof as shown in Figure~\ref{fig:prune}.
-When a contradiction is found (line~\ref{code:prune1}), $P$ is popped to the branching point where the search resumes and the corresponding partial interpolant is pushed back on $P$.
+When a contradiction is found (line~\ref{code:empty}, else branch), $P$ is popped to the branching point where the search resumes and the corresponding partial interpolant is pushed back on $P$.
 When the ICP loop ends, $P$ contains the final interpolant.
 
 \paragraph{Interpolant sizes.}
