@@ -52,17 +52,21 @@ The interpolant $I$ is composed of the parts corresponding to $A$. We will compu
 We have implemented the algorithms in the SMT solver \dReal~\cite{DBLP:conf/cade/GaoKC13}. We show examples of applications from various domains such as control and robotic design, and hybrid system verification.  
 
 \paragraph{Related work.}
-Our algorithm is very similar to the algorithm for propositional interpolation studied by Pudl{\'a}k~\cite{MR1472134}. 
+After the first publication of this work, we learned that Kupferschmid and Becker~\cite{DBLP:conf/formats/KupferschmidB11} have already obtained a similar result and implemented it in \iSat~\cite{DBLP:journals/jsat/FranzleHTRS07}.
+Their paper present an interpolation algorithms based on McMillan's propositional interpolation system.
+Our algorithm is based on Pudl{\'a}k~\cite{MR1472134} interpolation system.
+Martin Fr\"anzle confirmed to us that \iSat implements interpolation using either McMillan or Pudl{\'a}k system.
 Craig interpolation for real or integer arithmetic has focused on the linear fragment with LA(ℝ)~\cite{DBLP:conf/tacas/McMillan04,DBLP:conf/vmcai/RybalchenkoS07} and LA(ℤ)~\cite{DBLP:conf/cade/BrilloutKRW10,DBLP:conf/tacas/GriggioLS11}.
 Dai et al.~\cite{DBLP:conf/cav/DaiXZ13} present a method to generate interpolants for polynomial formula.
 Their method use semi-definite programming to search for a polynomial interpolant and it is complete under the \emph{Archimedean} condition. In fact, the Archimedean condition imposes similar restrictions as δ-decidability, e.g., the variables over bounded domains and limited support for strict inequalities.
-Our method is more general in that it handles nonlinear fragments over ℝ that include transcendental functions and solution functions of ordinary differention equations. Existing tools to compute interpolation such as
+Our method is more general in that it handles nonlinear fragments over ℝ that include transcendental functions and solution functions of ordinary differention equations.
+Existing tools to compute interpolation such as
 \mathsat~\cite{mathsat5},
 \princess~\cite{DBLP:conf/cade/BrilloutKRW10},
 \smtinterpol~\cite{DBLP:conf/spin/ChristHN12}, and
 \zthree~\cite{DBLP:conf/fmcad/McMillan11}
 focus on linear arithmetic.
-We are the first to provide interpolation in nonlinear theories.
+\iSat~\cite{DBLP:journals/jsat/FranzleHTRS07} can compute interpolants for nonlinear theories.
 
 
 \paragraph{Outline.}
@@ -70,6 +74,9 @@ In Section~\ref{sec:prelim}, we review notions related to interpolation, nonline
 In Section~\ref{sec:itp}, we introduce our interpolation algorithm.
 In Section~\ref{sec:eval}, we present and evaluate our implementation.
 We conclude and sketch future research direction in Section~\ref{sec:concl}.
+
+\paragraph{Acknowledgments.}
+We thanks Martin Fr\"anzle for pointing to the work about Craig interpolation in \iSat and the anonymous reviewers for their helpful feedback..
 
 %Given two formulas which conjunction is unsatisfiable, the Craig interpolant~\cite{MR0104564} is a formula over the common variables that serves
 
