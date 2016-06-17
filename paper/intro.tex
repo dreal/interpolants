@@ -54,17 +54,15 @@ We have implemented the algorithms in the SMT solver \dReal~\cite{DBLP:conf/cade
 \paragraph{Special Note.} After the first publication of this work, we found that Kupferschmid and Becker have published a similar result~\cite{DBLP:conf/formats/KupferschmidB11}. They presented an interpolation algorithm based on McMillan's propositional interpolation system. Our algorithm is based on the Pudl{\'a}k interpolation system~\cite{MR1472134}, which is slightly different but the main idea is the same. The focus of~\cite{DBLP:conf/formats/KupferschmidB11} is on non-ODE constraints, while most of the examples in this paper come from hybrid system design and involve ODE constraints.   
 
 \paragraph{Related work.}
-Craig interpolation for real or integer arithmetic has focused on the linear fragment with LA(ℝ)~\cite{DBLP:conf/tacas/McMillan04,DBLP:conf/vmcai/RybalchenkoS07} and LA(ℤ)~\cite{DBLP:conf/cade/BrilloutKRW10,DBLP:conf/tacas/GriggioLS11}.
+Craig interpolation for real or integer arithmetic has focused on the linear fragment with LA(ℝ)~\cite{DBLP:conf/tacas/McMillan04,DBLP:conf/vmcai/RybalchenkoS07} and LA(ℤ)~\cite{DBLP:conf/cade/BrilloutKRW10,DBLP:conf/tacas/GriggioLS11}, with the exception of \iSat~\cite{DBLP:journals/jsat/FranzleHTRS07} as mentioned in the special note above. 
 Dai et al.~\cite{DBLP:conf/cav/DaiXZ13} present a method to generate interpolants for polynomial formula.
 Their method use semi-definite programming to search for a polynomial interpolant and it is complete under the \emph{Archimedean} condition. In fact, the Archimedean condition imposes similar restrictions as δ-decidability, e.g., the variables over bounded domains and limited support for strict inequalities.
 Our method is more general in that it handles nonlinear fragments over ℝ that include transcendental functions and solution functions of ordinary differention equations.
-Existing tools to compute interpolation such as
+Many existing tools can compute interpolants for in the theory of linear real arithmetic, such as 
 \mathsat~\cite{mathsat5},
 \princess~\cite{DBLP:conf/cade/BrilloutKRW10},
 \smtinterpol~\cite{DBLP:conf/spin/ChristHN12}, and
-\zthree~\cite{DBLP:conf/fmcad/McMillan11}
-focus on linear arithmetic.
-\iSat~\cite{DBLP:journals/jsat/FranzleHTRS07} can compute interpolants for nonlinear theories.
+\zthree~\cite{DBLP:conf/fmcad/McMillan11}.
 
 \paragraph{Outline.}
 In Section~\ref{sec:prelim}, we review notions related to interpolation, nonlinear arithmetic over the Reals and δ-decision procedures.
